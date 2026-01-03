@@ -49,14 +49,13 @@ RUN touch src/main.rs src/lib.rs
 # If we want to skip the check, we can set SQLX_OFFLINE=true, but we need the .sqlx directory.
 # 
 # Let's try to build. If it fails, we'll need to instruct the user to run `cargo sqlx prepare`.
-
 RUN cargo build --release
 
 # Runtime stage
 FROM debian:bookworm-slim
 
 # Install runtime dependencies
-RUN apt-get update && apt-get install -y libssl3 ca-certificates && rm -rf /var/lib/apt/lists/*
+# RUN apt-get update && apt-get install -y libssl3 ca-certificates && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /usr/local/bin
 

@@ -1,9 +1,9 @@
 use sqlx::PgPool;
 use uuid::Uuid;
 use crate::models::postgres::maintenance::{
-    MaintenanceRecord, CreateMaintenanceRecordDto, MaintenanceType,
+    MaintenanceRecord, CreateMaintenanceRecordDto,
     MaintenanceSchedule, CreateMaintenanceScheduleDto,
-    Alert, CreateAlertDto, AlertSeverity
+    Alert, CreateAlertDto
 };
 use crate::models::postgres::vehicle::VehicleType;
 use crate::error::AppError;

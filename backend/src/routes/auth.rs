@@ -1,5 +1,5 @@
 use actix_web::{web, HttpResponse, Responder, HttpMessage, HttpRequest};
-use crate::services::auth_service::{AuthServiceTrait, LoginDto, Claims, AuthResponse};
+use crate::services::auth_service::{AuthServiceTrait, LoginDto, Claims};
 use crate::models::postgres::user::CreateUserDto;
 
 #[utoipa::path(

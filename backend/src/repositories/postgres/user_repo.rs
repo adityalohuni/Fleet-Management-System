@@ -1,6 +1,6 @@
 use sqlx::PgPool;
 use uuid::Uuid;
-use crate::models::postgres::user::{User, CreateUserDto, UserRole};
+use crate::models::postgres::user::{User, CreateUserDto};
 use crate::error::AppError;
 use async_trait::async_trait;
 

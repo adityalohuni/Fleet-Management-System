@@ -22,15 +22,12 @@ dotenv = "0.15"
 chrono = { version = "0.4", features = ["serde"] }
 uuid = { version = "1.10", features = ["serde", "v4"] }
 env_logger = "0.11"
-log = "0.4"
 redis = { version = "0.24", features = ["tokio-comp"] }
 argon2 = "0.5"
 jsonwebtoken = "9"
 validator = { version = "0.16", features = ["derive"] }
 utoipa = { version = "4", features = ["actix_extras", "chrono", "uuid", "decimal"] }
 utoipa-swagger-ui = { version = "6", features = ["actix-web"] }
-aws-config = "1"
-aws-sdk-s3 = "1"
 rust_decimal = { version = "1.33", features = ["serde-with-float"] }
 derive_more = "0.99"
 async-trait = "0.1.89"
