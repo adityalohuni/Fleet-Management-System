@@ -28,53 +28,59 @@ import {
   useDashboardAlerts 
 } from "../../hooks/useDashboard";
 import { Skeleton } from "../ui/skeleton";
-
-const maintenanceCostData = [
-  { month: "Jan", cost: 12500 },
-  { month: "Feb", cost: 15800 },
-  { month: "Mar", cost: 11200 },
-  { month: "Apr", cost: 14500 },
-  { month: "May", cost: 13200 },
-  { month: "Jun", cost: 16800 },
-];
-
-const profitabilityData = [
-  { vehicle: "TRK-101", profit: 8500 },
-  { vehicle: "TRK-102", profit: 7200 },
-  { vehicle: "TRK-103", profit: 9100 },
-  { vehicle: "TRK-104", profit: 6800 },
-  { vehicle: "VAN-201", profit: 5400 },
-];
+import { useMonthlySummary, useVehicleProfitability } from "../../hooks/useFinancial";
 
 export function Dashboard() {
   const { data: metrics, isLoading: isLoadingMetrics } = useDashboardMetrics();
   const { data: utilizationData, isLoading: isLoadingUtilization } = useDashboardUtilization();
   const { data: recentAssignments, isLoading: isLoadingAssignments } = useDashboardRecentAssignments();
   const { data: alerts, isLoading: isLoadingAlerts } = useDashboardAlerts();
+  const { data: monthlySummary, isLoading: isLoadingMonthlySummary } = useMonthlySummary();
+  const { data: vehicleProfitability, isLoading: isLoadingVehicleProfitability } = useVehicleProfitability();
 
-  const isLoading = isLoadingMetrics || isLoadingUtilization || isLoadingAssignments || isLoadingAlerts;
+  const isLoading =
+    isLoadingMetrics ||
+    isLoadingUtilization ||
+    isLoadingAssignments ||
+    isLoadingAlerts ||
+    isLoadingMonthlySummary ||
+    isLoadingVehicleProfitability;
+
+  const maintenanceCostData =
+    monthlySummary?.map((item) => ({
+      month: item.month,
+      cost: Number.parseFloat(item.cost),
+    })) ?? [];
+
+  const profitabilityData =
+    vehicleProfitability?.map((v) => ({
+      vehicle: v.vehicle_plate,
+      profit: Number.parseFloat(v.profit),
+    })) ?? [];
 
   const currentDate = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
 
   return (
     <div className="space-y-8 pb-8">
-      <div className="border-b border-border/40 pb-6">
-        <h1 className="text-4xl font-bold tracking-tight text-foreground mb-1">Dashboard</h1>
-        <p className="text-lg text-muted-foreground font-medium">{currentDate}</p>
+      <div className="flex items-center justify-between border-b border-border/40 pb-6">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight text-foreground mb-2">Dashboard</h1>
+          <p className="text-base text-foreground-secondary">{currentDate}</p>
+        </div>
       </div>
 
       {/* KPI Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <Card className="border-border/50 shadow-sm hover:shadow-md transition-all duration-300 bg-card/50">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wide">Total Vehicles</CardTitle>
+            <CardTitle className="text-sm font-medium text-foreground-tertiary uppercase tracking-wide">Total Vehicles</CardTitle>
             <Truck className="w-5 h-5 text-primary opacity-80" />
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-foreground tracking-tight">
               {isLoading ? <Skeleton className="h-8 w-16" /> : metrics?.totalVehicles}
             </div>
-            <div className="text-sm text-muted-foreground mt-1 font-medium">
+            <div className="text-sm text-foreground-tertiary mt-1 font-medium">
               {isLoading ? <Skeleton className="h-4 w-24" /> : `${metrics?.availableVehicles} available now`}
             </div>
           </CardContent>
@@ -82,14 +88,14 @@ export function Dashboard() {
 
         <Card className="border-border/50 shadow-sm hover:shadow-md transition-all duration-300 bg-card/50">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wide">Active Drivers</CardTitle>
+            <CardTitle className="text-sm font-medium text-foreground-tertiary uppercase tracking-wide">Active Drivers</CardTitle>
             <Users className="w-5 h-5 text-chart-2 opacity-80" />
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-foreground tracking-tight">
               {isLoading ? <Skeleton className="h-8 w-16" /> : metrics?.activeDrivers}
             </div>
-            <div className="text-sm text-muted-foreground mt-1 font-medium">
+            <div className="text-sm text-foreground-tertiary mt-1 font-medium">
               {isLoading ? <Skeleton className="h-4 w-24" /> : `${metrics?.driversOnDuty} on duty`}
             </div>
           </CardContent>
@@ -97,7 +103,7 @@ export function Dashboard() {
 
         <Card className="border-border/50 shadow-sm hover:shadow-md transition-all duration-300 bg-card/50">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wide">Services in Progress</CardTitle>
+            <CardTitle className="text-sm font-medium text-foreground-tertiary uppercase tracking-wide">Services in Progress</CardTitle>
             <div className="w-5 h-5 rounded-full bg-chart-3/20 flex items-center justify-center">
               <div className="w-2.5 h-2.5 bg-chart-3 rounded-full" />
             </div>
@@ -106,7 +112,7 @@ export function Dashboard() {
             <div className="text-3xl font-bold text-foreground tracking-tight">
               {isLoading ? <Skeleton className="h-8 w-16" /> : metrics?.servicesInProgress}
             </div>
-            <div className="text-sm text-muted-foreground mt-1 font-medium">
+            <div className="text-sm text-foreground-tertiary mt-1 font-medium">
               {isLoading ? <Skeleton className="h-4 w-24" /> : `${metrics?.servicesCompletedToday} completed today`}
             </div>
           </CardContent>
@@ -114,14 +120,14 @@ export function Dashboard() {
 
         <Card className="border-border/50 shadow-sm hover:shadow-md transition-all duration-300 bg-card/50">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wide">Upcoming Maintenance</CardTitle>
+            <CardTitle className="text-sm font-medium text-foreground-tertiary uppercase tracking-wide">Upcoming Maintenance</CardTitle>
             <Wrench className="w-5 h-5 text-chart-4 opacity-80" />
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-foreground tracking-tight">
               {isLoading ? <Skeleton className="h-8 w-16" /> : metrics?.upcomingMaintenance}
             </div>
-            <div className="text-sm text-muted-foreground mt-1 font-medium">
+            <div className="text-sm text-foreground-tertiary mt-1 font-medium">
               {isLoading ? <Skeleton className="h-4 w-24" /> : `${metrics?.overdueMaintenance} overdue`}
             </div>
           </CardContent>
@@ -236,11 +242,11 @@ export function Dashboard() {
               <Table>
                 <TableHeader>
                   <TableRow className="hover:bg-transparent border-border/50">
-                    <TableHead className="text-xs uppercase tracking-wider font-semibold text-muted-foreground">ID</TableHead>
-                    <TableHead className="text-xs uppercase tracking-wider font-semibold text-muted-foreground">Vehicle</TableHead>
-                    <TableHead className="text-xs uppercase tracking-wider font-semibold text-muted-foreground">Driver</TableHead>
-                    <TableHead className="text-xs uppercase tracking-wider font-semibold text-muted-foreground">Status</TableHead>
-                    <TableHead className="text-xs uppercase tracking-wider font-semibold text-muted-foreground">Completion</TableHead>
+                    <TableHead className="text-xs uppercase tracking-wider font-semibold text-foreground-tertiary">ID</TableHead>
+                    <TableHead className="text-xs uppercase tracking-wider font-semibold text-foreground-tertiary">Vehicle</TableHead>
+                    <TableHead className="text-xs uppercase tracking-wider font-semibold text-foreground-tertiary">Driver</TableHead>
+                    <TableHead className="text-xs uppercase tracking-wider font-semibold text-foreground-tertiary">Status</TableHead>
+                    <TableHead className="text-xs uppercase tracking-wider font-semibold text-foreground-tertiary">Completion</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -282,7 +288,7 @@ export function Dashboard() {
                                 style={{ width: `${assignment.progress}%` }}
                               />
                             </div>
-                            <span className="text-xs text-muted-foreground w-8 text-right">{assignment.progress}%</span>
+                            <span className="text-xs text-foreground-tertiary w-8 text-right">{assignment.progress}%</span>
                           </div>
                         </TableCell>
                       </TableRow>

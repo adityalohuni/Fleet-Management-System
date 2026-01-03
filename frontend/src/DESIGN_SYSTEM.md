@@ -1,8 +1,8 @@
-# Fleet Management System - Apple Music Inspired Design
+# Fleet Management System - Modern Design System
 
 ## Design System Overview
 
-This Fleet Management System features an elegant, modern design inspired by Apple Music's sophisticated aesthetic. The interface combines glassmorphism effects, refined typography, smooth animations, and full dark/light mode support.
+This Fleet Management System features an elegant, modern design with a sophisticated aesthetic. The interface combines semi-transparent layered effects, refined typography, smooth animations, and full dark/light mode support.
 
 ## Key Design Features
 
@@ -36,7 +36,7 @@ All UI components have been enhanced with:
 Click the sun/moon icon in the top navigation to switch between light and dark modes. Your preference is automatically saved.
 
 ## Typography
-- System font stack: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto
+- System font stack: Segoe UI, Roboto, Helvetica Neue, sans-serif
 - Antialiased text rendering
 - Tight letter spacing for headings
 - Comfortable line height for body text

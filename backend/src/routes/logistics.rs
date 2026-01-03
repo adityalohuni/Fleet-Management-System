@@ -54,6 +54,13 @@ pub async fn create_job(
     }
 }
 
+pub async fn list_jobs(service: web::Data<dyn LogisticsServiceTrait>) -> impl Responder {
+    match service.list_jobs().await {
+        Ok(jobs) => HttpResponse::Ok().json(jobs),
+        Err(e) => HttpResponse::InternalServerError().body(e.to_string()),
+    }
+}
+
 pub async fn get_job(
     service: web::Data<dyn LogisticsServiceTrait>,
     path: web::Path<Uuid>,
@@ -135,6 +142,7 @@ pub fn config(cfg: &mut web::ServiceConfig) {
             .service(
                 web::scope("/jobs")
                     .route("", web::post().to(create_job))
+                    .route("", web::get().to(list_jobs))
                     .route("/{id}", web::get().to(get_job))
                     .route("/{id}/status", web::patch().to(update_job_status))
             )

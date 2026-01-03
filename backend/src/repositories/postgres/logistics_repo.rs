@@ -98,6 +98,7 @@ impl CustomerRepositoryTrait for CustomerRepository {
 #[async_trait]
 pub trait TransportJobRepositoryTrait: Send + Sync {
     async fn create(&self, dto: CreateTransportJobDto) -> Result<TransportJob, AppError>;
+    async fn find_all(&self) -> Result<Vec<TransportJob>, AppError>;
     async fn find_by_id(&self, id: Uuid) -> Result<Option<TransportJob>, AppError>;
     async fn update_status(&self, id: Uuid, status: JobStatus) -> Result<TransportJob, AppError>;
 }
@@ -134,6 +135,17 @@ impl TransportJobRepositoryTrait for TransportJobRepository {
         .map_err(AppError::DatabaseError)?;
 
         Ok(job)
+    }
+
+    async fn find_all(&self) -> Result<Vec<TransportJob>, AppError> {
+        let jobs = sqlx::query_as::<_, TransportJob>(
+            "SELECT * FROM transport_jobs ORDER BY created_at DESC"
+        )
+        .fetch_all(&self.pool)
+        .await
+        .map_err(AppError::DatabaseError)?;
+
+        Ok(jobs)
     }
 
     async fn find_by_id(&self, id: Uuid) -> Result<Option<TransportJob>, AppError> {

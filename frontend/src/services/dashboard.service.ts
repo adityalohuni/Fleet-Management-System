@@ -17,15 +17,19 @@ export const DashboardService = {
         MaintenanceService.getAlerts(),
       ]);
 
+      const isSevere = (sev?: string) => sev === 'High' || sev === 'Critical';
+      const isAvailableVehicle = (status?: string) => status === 'Available';
+      const isActiveDriver = (status?: string) => status === 'Active';
+
       return {
         totalVehicles: vehicles.length,
-        availableVehicles: vehicles.filter(v => v.status === 'Available').length,
+        availableVehicles: vehicles.filter(v => isAvailableVehicle(v.status)).length,
         activeDrivers: drivers.length,
-        driversOnDuty: drivers.filter(d => d.status === 'OnDuty').length,
+        driversOnDuty: drivers.filter(d => isActiveDriver(d.status)).length,
         servicesInProgress: assignments.filter(a => a.status === 'Active').length,
-        servicesCompletedToday: assignments.filter(a => a.status === 'Completed').length, // Simplified logic
-        upcomingMaintenance: alerts.filter(a => a.severity !== 'high').length,
-        overdueMaintenance: alerts.filter(a => a.severity === 'high').length,
+        servicesCompletedToday: assignments.filter(a => a.status === 'Completed').length,
+        upcomingMaintenance: alerts.filter(a => !isSevere(a.severity)).length,
+        overdueMaintenance: alerts.filter(a => isSevere(a.severity)).length,
       };
     } catch (error) {
       console.error('Failed to fetch dashboard metrics', error);
@@ -58,20 +62,46 @@ export const DashboardService = {
 
   getRecentAssignments: async (): Promise<Assignment[]> => {
     try {
-      const assignments = await AssignmentService.getAssignments();
-      // Map generated Assignment to frontend Assignment type
-      return assignments.slice(0, 5).map(a => ({
-        id: a.id || '',
-        vehicleId: a.vehicle_id || '',
-        driverId: a.driver_id || '',
-        vehicleName: 'Vehicle ' + a.vehicle_id?.substring(0, 4), // Placeholder
-        driverName: 'Driver ' + a.driver_id?.substring(0, 4), // Placeholder
-        status: a.status as any,
-        startDate: a.start_time || '',
-        endDate: a.end_time || '',
-        location: 'Unknown',
-        progress: a.status === 'Completed' ? 100 : 50,
-      }));
+      const [assignments, vehicles, drivers] = await Promise.all([
+        AssignmentService.getAssignments(),
+        VehicleService.getVehicles(),
+        DriverService.getDrivers(),
+      ]);
+
+      const vehicleNameById = new Map(
+        vehicles
+          .filter(v => !!v.id)
+          .map(v => [v.id as string, v.license_plate || v.model || (v.id as string)] as const)
+      );
+
+      const driverNameById = new Map(
+        drivers
+          .filter(d => !!d.id)
+          .map(d => [d.id as string, d.name || d.user_id || (d.id as string)] as const)
+      );
+
+      const progressForStatus = (status?: string) => {
+        if (status === 'Completed') return 100;
+        if (status === 'Active') return 50;
+        return 0;
+      };
+
+      return assignments.slice(0, 5).map(a => {
+        const vehicleId = a.vehicle_id || '';
+        const driverId = a.driver_id || '';
+        return {
+          id: a.id || '',
+          vehicleId,
+          driverId,
+          vehicleName: vehicleNameById.get(vehicleId) || vehicleId,
+          driverName: driverNameById.get(driverId) || driverId,
+          status: a.status as any,
+          startDate: a.start_time || '',
+          endDate: a.end_time || '',
+          location: '—',
+          progress: progressForStatus(a.status),
+        };
+      });
     } catch (error) {
       console.error('Failed to fetch assignments', error);
       return [];
@@ -81,12 +111,18 @@ export const DashboardService = {
   getAlerts: async (): Promise<Alert[]> => {
     try {
       const alerts = await MaintenanceService.getAlerts();
+
+      const toUiSeverity = (sev?: string): 'high' | 'medium' | 'low' => {
+        if (sev === 'Critical' || sev === 'High') return 'high';
+        if (sev === 'Medium') return 'medium';
+        return 'low';
+      };
+
       return alerts.map(a => ({
-        id: a.id,
-        type: 'maintenance', // Default type
-        message: a.message || '',
-        severity: (a.severity as any) || 'low',
-        date: a.created_at || new Date().toISOString(),
+        id: a.id || '',
+        type: 'maintenance',
+        message: `${a.type || 'Alert'} for ${a.entity_id || 'unknown entity'}`,
+        severity: toUiSeverity(a.severity),
       }));
     } catch (error) {
       console.error('Failed to fetch alerts', error);

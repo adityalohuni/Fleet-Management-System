@@ -29,7 +29,7 @@ import {
 } from "../ui/select";
 import { useVehicles, useCreateVehicle, useDeleteVehicle, useUpdateVehicle } from "../../hooks/useVehicles";
 import { Skeleton } from "../ui/skeleton";
-import { toast } from "sonner";
+import { toast, formatApiError } from "../../lib/toast";
 import { Vehicle } from "../../types";
 
 export function Vehicles() {
@@ -72,6 +72,8 @@ export function Vehicles() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const toastId = toast.loading(editingId ? 'Updating vehicle...' : 'Creating vehicle...');
+    
     try {
       if (editingId) {
         await updateVehicle.mutateAsync({
@@ -82,7 +84,7 @@ export function Vehicles() {
             status: newVehicleStatus as any,
           }
         });
-        toast.success("Vehicle updated successfully");
+        toast.update(toastId, 'success', "Vehicle updated successfully");
       } else {
         await createVehicle.mutateAsync({
           model: newVehicleModel,
@@ -92,25 +94,28 @@ export function Vehicles() {
           lastService: new Date().toISOString(),
           utilization: 0
         });
-        toast.success("Vehicle created successfully");
+        toast.update(toastId, 'success', "Vehicle created successfully");
       }
       setIsDialogOpen(false);
       resetForm();
     } catch (error) {
-      toast.error(editingId ? "Failed to update vehicle" : "Failed to create vehicle");
+      const errorMessage = formatApiError(error, editingId ? "Failed to update vehicle" : "Failed to create vehicle");
+      toast.update(toastId, 'error', errorMessage);
     }
   };
 
   const handleDeleteVehicle = async (id: string) => {
     if (confirm("Are you sure you want to delete this vehicle?")) {
+      const toastId = toast.loading('Deleting vehicle...');
       try {
         await deleteVehicle.mutateAsync(id);
-        toast.success("Vehicle deleted successfully");
+        toast.update(toastId, 'success', "Vehicle deleted successfully");
         if (selectedVehicleId === id) {
           setSelectedVehicleId(null);
         }
       } catch (error) {
-        toast.error("Failed to delete vehicle");
+        const errorMessage = formatApiError(error, "Failed to delete vehicle");
+        toast.update(toastId, 'error', errorMessage);
       }
     }
   };
@@ -124,10 +129,10 @@ export function Vehicles() {
 
   return (
     <div className="space-y-6 pb-8">
-      <div className="flex items-center justify-between border-b border-border/40 pb-6">
+      <div className="flex items-start justify-between border-b border-border/40 pb-6">
         <div>
-          <h1 className="text-4xl font-bold tracking-tight text-foreground mb-1">Vehicles</h1>
-          <p className="text-lg text-muted-foreground font-medium">Manage fleet vehicles and track maintenance</p>
+          <h1 className="text-3xl font-bold tracking-tight text-foreground mb-2">Vehicles</h1>
+          <p className="text-base text-foreground-secondary">Manage fleet vehicles and track maintenance</p>
         </div>
         <Dialog open={isDialogOpen} onOpenChange={handleOpenDialog}>
           <DialogTrigger asChild>
@@ -196,7 +201,7 @@ export function Vehicles() {
             <CardTitle>Vehicle Fleet</CardTitle>
             <div className="flex items-center gap-3">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-foreground-tertiary w-4 h-4" />
                 <Input placeholder="Search vehicles..." className="pl-9 w-64" />
               </div>
               <Select value={filterStatus} onValueChange={setFilterStatus}>
@@ -296,7 +301,7 @@ export function Vehicles() {
                 ))}
                 {filteredVehicles?.length === 0 && (
                   <TableRow>
-                    <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
+                    <TableCell colSpan={8} className="text-center py-8 text-foreground-secondary">
                       No vehicles found
                     </TableCell>
                   </TableRow>
@@ -324,15 +329,15 @@ export function Vehicles() {
             <TabsContent value="info" className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <div className="text-sm text-muted-foreground mb-1">Model</div>
+                  <div className="text-sm text-foreground-tertiary mb-1">Model</div>
                   <div className="text-foreground">{selectedVehicle?.model}</div>
                 </div>
                 <div>
-                  <div className="text-sm text-muted-foreground mb-1">Type</div>
+                  <div className="text-sm text-foreground-tertiary mb-1">Type</div>
                   <div className="text-foreground">{selectedVehicle?.type}</div>
                 </div>
                 <div>
-                  <div className="text-sm text-muted-foreground mb-1">Status</div>
+                  <div className="text-sm text-foreground-tertiary mb-1">Status</div>
                   <Badge
                     className={
                       selectedVehicle?.status === "Available"
@@ -346,38 +351,38 @@ export function Vehicles() {
                   </Badge>
                 </div>
                 <div>
-                  <div className="text-sm text-muted-foreground mb-1">Utilization Rate</div>
+                  <div className="text-sm text-foreground-tertiary mb-1">Utilization Rate</div>
                   <div className="text-foreground">{selectedVehicle?.utilization}%</div>
                 </div>
                 <div>
-                  <div className="text-sm text-muted-foreground mb-1">Mileage</div>
+                  <div className="text-sm text-foreground-tertiary mb-1">Mileage</div>
                   <div className="text-foreground">{selectedVehicle?.mileage.toLocaleString()} miles</div>
                 </div>
                 <div>
-                  <div className="text-sm text-muted-foreground mb-1">Last Service Date</div>
+                  <div className="text-sm text-foreground-tertiary mb-1">Last Service Date</div>
                   <div className="text-foreground">{selectedVehicle?.lastService ? new Date(selectedVehicle.lastService).toLocaleDateString() : 'N/A'}</div>
                 </div>
                 <div>
-                  <div className="text-sm text-muted-foreground mb-1">Next Maintenance</div>
+                  <div className="text-sm text-foreground-tertiary mb-1">Next Maintenance</div>
                   <div className="text-foreground">50,000 miles or 2025-12-15</div>
                 </div>
               </div>
             </TabsContent>
 
             <TabsContent value="maintenance">
-              <div className="text-center py-8 text-muted-foreground">
+              <div className="text-center py-8 text-foreground-secondary">
                 Maintenance history not yet connected to backend
               </div>
             </TabsContent>
 
             <TabsContent value="documents">
-              <div className="text-center py-8 text-muted-foreground">
+              <div className="text-center py-8 text-foreground-secondary">
                 No documents uploaded yet
               </div>
             </TabsContent>
 
             <TabsContent value="assignments">
-              <div className="text-center py-8 text-muted-foreground">
+              <div className="text-center py-8 text-foreground-secondary">
                 No assignment history available
               </div>
             </TabsContent>

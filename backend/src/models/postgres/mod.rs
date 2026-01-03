@@ -6,3 +6,4 @@ pub mod logistics;
 pub mod maintenance;
 pub mod telemetry;
 pub mod financial;
+pub mod settings;

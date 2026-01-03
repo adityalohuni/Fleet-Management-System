@@ -31,6 +31,7 @@ import { useAlerts, useResolveAlert, useMaintenanceRecords, useCreateMaintenance
 import { useVehicles } from "../../hooks/useVehicles";
 import { format } from "date-fns";
 import { MaintenanceRecord } from "../../types";
+import { toast, formatApiError } from "../../lib/toast";
 
 export function Maintenance() {
   const { data: alerts } = useAlerts();
@@ -49,7 +50,12 @@ export function Maintenance() {
 
   const handleLogService = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newRecord.vehicleId || !newRecord.cost || !newRecord.provider) return;
+    if (!newRecord.vehicleId || !newRecord.cost || !newRecord.provider) {
+      toast.warning('Please fill in all required fields');
+      return;
+    }
+
+    const toastId = toast.loading('Logging maintenance record...');
 
     try {
       await createRecord.mutateAsync({
@@ -60,10 +66,12 @@ export function Maintenance() {
         provider: newRecord.provider,
         description: newRecord.description,
       });
+      toast.update(toastId, 'success', 'Maintenance record logged successfully');
       setIsLogOpen(false);
       setNewRecord({ type: "Preventive", date: new Date().toISOString().slice(0, 16) });
     } catch (error) {
-      console.error("Failed to log service", error);
+      const errorMessage = formatApiError(error, 'Failed to log maintenance record');
+      toast.update(toastId, 'error', errorMessage);
     }
   };
 
@@ -83,10 +91,10 @@ export function Maintenance() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between border-b border-border/40 pb-6">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Maintenance</h1>
-          <p className="text-muted-foreground">
+          <h1 className="text-3xl font-bold tracking-tight text-foreground mb-2">Maintenance</h1>
+          <p className="text-base text-foreground-secondary">
             Monitor fleet health and schedule services
           </p>
         </div>
@@ -228,7 +236,7 @@ export function Maintenance() {
                 ))}
                 {(!alerts || alerts.filter(a => !a.isResolved).length === 0) && (
                   <TableRow>
-                    <TableCell colSpan={4} className="text-center text-muted-foreground">
+                    <TableCell colSpan={4} className="text-center text-foreground-secondary">
                       No active alerts
                     </TableCell>
                   </TableRow>
@@ -282,14 +290,14 @@ export function Maintenance() {
                 ))}
                 {!selectedVehicleId && (
                   <TableRow>
-                    <TableCell colSpan={4} className="text-center text-muted-foreground">
+                    <TableCell colSpan={4} className="text-center text-foreground-secondary">
                       Select a vehicle to view history
                     </TableCell>
                   </TableRow>
                 )}
                 {selectedVehicleId && (!records || records.length === 0) && (
                   <TableRow>
-                    <TableCell colSpan={4} className="text-center text-muted-foreground">
+                    <TableCell colSpan={4} className="text-center text-foreground-secondary">
                       No records found
                     </TableCell>
                   </TableRow>

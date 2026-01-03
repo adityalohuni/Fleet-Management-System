@@ -1,6 +1,6 @@
 use sqlx::PgPool;
 use uuid::Uuid;
-use crate::models::postgres::user::{User, CreateUserDto};
+use crate::models::postgres::user::{User, CreateUserDto, UserRole};
 use crate::error::AppError;
 use async_trait::async_trait;
 
@@ -11,6 +11,7 @@ pub trait UserRepositoryTrait: Send + Sync {
     async fn find_all(&self) -> Result<Vec<User>, AppError>;
     async fn find_by_id(&self, id: Uuid) -> Result<Option<User>, AppError>;
     async fn find_by_email(&self, email: &str) -> Result<Option<User>, AppError>;
+    async fn update(&self, id: Uuid, role: UserRole, is_active: bool) -> Result<User, AppError>;
     async fn delete(&self, id: Uuid) -> Result<(), AppError>;
 }
 
@@ -82,6 +83,27 @@ impl UserRepositoryTrait for UserRepository {
         .map_err(AppError::DatabaseError)?;
 
         Ok(user)
+    }
+
+    async fn update(&self, id: Uuid, role: UserRole, is_active: bool) -> Result<User, AppError> {
+        let user = sqlx::query_as::<_, User>(
+            r#"
+            UPDATE users
+            SET role = $2,
+                is_active = $3,
+                updated_at = NOW()
+            WHERE id = $1 AND deleted_at IS NULL
+            RETURNING *
+            "#
+        )
+        .bind(id)
+        .bind(role)
+        .bind(is_active)
+        .fetch_optional(&self.pool)
+        .await
+        .map_err(AppError::DatabaseError)?;
+
+        user.ok_or(AppError::NotFound(format!("User with id {} not found", id)))
     }
 
     async fn delete(&self, id: Uuid) -> Result<(), AppError> {

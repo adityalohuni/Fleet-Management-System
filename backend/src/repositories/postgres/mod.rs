@@ -6,3 +6,4 @@ pub mod maintenance_repo;
 pub mod telemetry_repo;
 pub mod user_repo;
 pub mod vehicle_repo;
+pub mod settings_repo;

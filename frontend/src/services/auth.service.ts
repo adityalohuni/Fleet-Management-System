@@ -1,4 +1,3 @@
-import { AuthService as ClientAuthService } from '../client';
 import { OpenAPI } from '../client';
 
 export interface User {
@@ -26,70 +25,142 @@ export interface RegisterCredentials {
 
 export const AuthService = {
   login: async (credentials: LoginCredentials): Promise<LoginResponse> => {
-    // 1. Login to get token
-    const response = await ClientAuthService.login(credentials);
-    const token = response.token;
-    
-    // 2. Set token for subsequent requests
-    localStorage.setItem('token', token);
-    // Update OpenAPI token immediately for the next request
-    OpenAPI.TOKEN = token;
+    try {
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(credentials),
+      });
 
-    // 3. Fetch user details (assuming /auth/me exists or decoding token)
-    // Since /auth/me is not in my openapi.json yet (I missed it in manual creation?), 
-    // I will decode the token or mock the user for now if /auth/me fails.
-    // Wait, I did put /api/auth/login in openapi.json. Did I put /api/auth/me?
-    // I didn't put /api/auth/me in the manual openapi.json.
-    // So ClientAuthService.me() won't exist.
-    
-    // I'll decode the token payload to get user info if possible, or just return a dummy user.
-    // For now, let's return a dummy user derived from email.
-    const user: User = {
-      id: '1',
-      email: credentials.email,
-      role: 'Admin',
-      name: 'Admin User'
-    };
-    
-    localStorage.setItem('user', JSON.stringify(user));
+      if (!response.ok) {
+        const errorText = await response.text();
+        let errorMessage = 'Login failed. Please check your credentials.';
 
-    return {
-      token,
-      user
-    };
+        try {
+          const errorJson = JSON.parse(errorText);
+          errorMessage = errorJson.message || errorJson.error || errorText;
+        } catch {
+          errorMessage = errorText || errorMessage;
+        }
+
+        if (response.status === 401) {
+          errorMessage = 'Invalid email or password';
+        } else if (response.status === 404) {
+          errorMessage = 'Authentication service not available';
+        } else if (response.status >= 500) {
+          errorMessage = 'Server error. Please try again later.';
+        }
+
+        throw new Error(errorMessage);
+      }
+
+      const data = await response.json();
+      const token = data.token;
+      
+      // 2. Set token for subsequent requests
+      localStorage.setItem('token', token);
+      // Update OpenAPI token immediately for the next request
+      OpenAPI.TOKEN = token;
+
+      const user: User = {
+        id: data.user.id,
+        email: data.user.email,
+        role: String(data.user.role),
+      };
+
+      localStorage.setItem('user', JSON.stringify(user));
+
+      return {
+        token,
+        user
+      };
+    } catch (error: any) {
+      // Parse and throw a user-friendly error message
+      let errorMessage = 'Login failed. Please check your credentials.';
+      
+      if (error.body) {
+        // If the error body has a message field
+        if (typeof error.body === 'string') {
+          errorMessage = error.body;
+        } else if (error.body.message) {
+          errorMessage = error.body.message;
+        } else if (error.body.error) {
+          errorMessage = error.body.error;
+        }
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
+      if (error.status === 401) {
+        errorMessage = 'Invalid email or password';
+      } else if (error.status === 404) {
+        errorMessage = 'Authentication service not available';
+      } else if (error.status >= 500) {
+        errorMessage = 'Server error. Please try again later.';
+      }
+      
+      throw new Error(errorMessage);
+    }
   },
 
   register: async (credentials: RegisterCredentials): Promise<LoginResponse> => {
-    const response = await fetch('/api/auth/register', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        email: credentials.email,
-        password_hash: credentials.password, // Backend expects password in password_hash field
-        role: credentials.role,
-        is_active: true,
-      }),
-    });
+    try {
+      const response = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: credentials.email,
+          password_hash: credentials.password, // Backend expects password in password_hash field
+          role: credentials.role,
+          is_active: true,
+        }),
+      });
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(errorText || 'Registration failed');
+      if (!response.ok) {
+        const errorText = await response.text();
+        let errorMessage = 'Registration failed';
+        
+        try {
+          const errorJson = JSON.parse(errorText);
+          errorMessage = errorJson.message || errorJson.error || errorText;
+        } catch {
+          errorMessage = errorText || 'Registration failed';
+        }
+        
+        if (response.status === 400) {
+          errorMessage = 'Invalid registration data. Please check your inputs.';
+        } else if (response.status === 409) {
+          errorMessage = 'An account with this email already exists.';
+        } else if (response.status >= 500) {
+          errorMessage = 'Server error. Please try again later.';
+        }
+        
+        throw new Error(errorMessage);
+      }
+
+      const data = await response.json();
+      const token = data.token;
+      const user = data.user;
+
+      localStorage.setItem('token', token);
+      OpenAPI.TOKEN = token;
+      localStorage.setItem('user', JSON.stringify(user));
+
+      return {
+        token,
+        user,
+      };
+    } catch (error: any) {
+      // Re-throw if it's already our custom error
+      if (error.message) {
+        throw error;
+      }
+      throw new Error('Registration failed. Please try again.');
     }
-
-    const data = await response.json();
-    const token = data.token;
-    const user = data.user;
-
-    localStorage.setItem('token', token);
-    OpenAPI.TOKEN = token;
-    localStorage.setItem('user', JSON.stringify(user));
-
-    return {
-      token,
-      user,
-    };
   },
 
   logout: () => {

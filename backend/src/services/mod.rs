@@ -6,5 +6,7 @@ pub mod maintenance_service;
 pub mod logistics_service;
 pub mod telemetry_service;
 pub mod financial_service;
+pub mod settings_service;
+pub mod user_service;
 
 

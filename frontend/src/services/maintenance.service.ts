@@ -21,7 +21,12 @@ export const MaintenanceService = {
   },
 
   resolveAlert: async (id: string): Promise<void> => {
-    await ClientMaintenanceService.resolveAlert(id);
+    try {
+      await ClientMaintenanceService.resolveAlert(id);
+    } catch (error) {
+      console.error('Failed to resolve alert', error);
+      throw error;
+    }
   },
 
   getRecordsByVehicle: async (vehicleId: string): Promise<MaintenanceRecord[]> => {
@@ -43,22 +48,27 @@ export const MaintenanceService = {
   },
 
   createRecord: async (record: Omit<MaintenanceRecord, 'id'>): Promise<MaintenanceRecord> => {
-    const r = await ClientMaintenanceService.createMaintenanceRecord({
-      vehicle_id: record.vehicleId || '',
-      type: (record.type as any) || 'Preventive',
-      cost: record.cost.toString(),
-      date: record.date,
-      provider: record.provider,
-      description: record.description,
-    });
-    return {
-      id: r.id || '',
-      vehicleId: r.vehicle_id || '',
-      type: (r.type as any) || 'Preventive',
-      cost: parseFloat(r.cost || '0'),
-      date: r.date || '',
-      provider: r.provider || '',
-      description: r.description || '',
-    };
+    try {
+      const r = await ClientMaintenanceService.createMaintenanceRecord({
+        vehicle_id: record.vehicleId || '',
+        type: (record.type as any) || 'Preventive',
+        cost: record.cost.toString(),
+        date: record.date,
+        provider: record.provider,
+        description: record.description,
+      });
+      return {
+        id: r.id || '',
+        vehicleId: r.vehicle_id || '',
+        type: (r.type as any) || 'Preventive',
+        cost: parseFloat(r.cost || '0'),
+        date: r.date || '',
+        provider: r.provider || '',
+        description: r.description || '',
+      };
+    } catch (error) {
+      console.error('Failed to create maintenance record', error);
+      throw error;
+    }
   }
 };

@@ -14,7 +14,10 @@ use fleet_management_backend::services::telemetry_service::{TelemetryService, Te
 use fleet_management_backend::repositories::postgres::financial_repo::FinancialRepository;
 use fleet_management_backend::services::financial_service::{FinancialService, FinancialServiceTrait};
 use fleet_management_backend::repositories::postgres::user_repo::UserRepository;
+use fleet_management_backend::repositories::postgres::settings_repo::SettingsRepository;
 use fleet_management_backend::services::auth_service::{AuthService, AuthServiceTrait};
+use fleet_management_backend::services::settings_service::{SettingsService, SettingsServiceTrait};
+use fleet_management_backend::services::user_service::{UserService, UserServiceTrait};
 use fleet_management_backend::middleware::auth_middleware::Auth;
 use fleet_management_backend::api_docs::ApiDoc;
 use actix_web::{web, App, HttpServer, HttpResponse, Responder};
@@ -113,6 +116,16 @@ async fn main() -> std::io::Result<()> {
         let auth_service: Arc<dyn AuthServiceTrait> = Arc::new(AuthService::new(user_repo, config.jwt_secret.clone()));
         let auth_service_data = web::Data::from(auth_service);
 
+        // Settings Service
+        let settings_repo = Arc::new(SettingsRepository::new(pool.clone()));
+        let settings_service: Arc<dyn SettingsServiceTrait> = Arc::new(SettingsService::new(settings_repo));
+        let settings_service_data = web::Data::from(settings_service);
+
+        // User Service
+        let user_repo2 = Arc::new(UserRepository::new(pool.clone()));
+        let user_service: Arc<dyn UserServiceTrait> = Arc::new(UserService::new(user_repo2));
+        let user_service_data = web::Data::from(user_service);
+
         App::new()
             .wrap(cors)
             .app_data(web::Data::new(pool.clone()))
@@ -124,6 +137,8 @@ async fn main() -> std::io::Result<()> {
             .app_data(telemetry_service_data)
             .app_data(financial_service_data)
             .app_data(auth_service_data)
+            .app_data(settings_service_data)
+            .app_data(user_service_data)
             .service(
                 SwaggerUi::new("/swagger-ui/{_:.*}")
                     .url("/api-docs/openapi.json", ApiDoc::openapi())
@@ -143,6 +158,8 @@ async fn main() -> std::io::Result<()> {
                         web::scope("")
                             .wrap(Auth { jwt_secret: config.jwt_secret.clone() })
                             .configure(routes::auth::config_protected)
+                            .configure(routes::settings::config)
+                            .configure(routes::users::config)
                     )
             )
     })

@@ -3,6 +3,7 @@ import { render, screen } from '@testing-library/react';
 import { Dashboard } from './Dashboard';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import * as DashboardHooks from '../../hooks/useDashboard';
+import * as FinancialHooks from '../../hooks/useFinancial';
 
 // Mock UI components
 vi.mock('../ui/card', () => ({
@@ -38,6 +39,11 @@ vi.mock('../../hooks/useDashboard', () => ({
   useDashboardAlerts: vi.fn(),
 }));
 
+vi.mock('../../hooks/useFinancial', () => ({
+  useMonthlySummary: vi.fn(),
+  useVehicleProfitability: vi.fn(),
+}));
+
 describe('Dashboard Page', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -45,6 +51,8 @@ describe('Dashboard Page', () => {
     (DashboardHooks.useDashboardUtilization as any).mockReturnValue({ data: [], isLoading: false });
     (DashboardHooks.useDashboardRecentAssignments as any).mockReturnValue({ data: [], isLoading: false });
     (DashboardHooks.useDashboardAlerts as any).mockReturnValue({ data: [], isLoading: false });
+    (FinancialHooks.useMonthlySummary as any).mockReturnValue({ data: [], isLoading: false });
+    (FinancialHooks.useVehicleProfitability as any).mockReturnValue({ data: [], isLoading: false });
   });
 
   it('renders loading skeletons when data is loading', () => {

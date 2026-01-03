@@ -6,6 +6,7 @@ import App from "./App.tsx";
 import { queryClient } from './lib/query-client';
 import { OpenAPI } from './client';
 import { AuthProvider } from "./contexts/AuthContext";
+import { Toaster } from "./components/ui/sonner";
 import "./index.css";
 
 // Configure API Client
@@ -18,6 +19,7 @@ createRoot(document.getElementById("root")!).render(
   <QueryClientProvider client={queryClient}>
     <AuthProvider>
       <App />
+      <Toaster />
     </AuthProvider>
     <ReactQueryDevtools initialIsOpen={false} />
   </QueryClientProvider>

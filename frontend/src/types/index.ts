@@ -92,3 +92,18 @@ export interface VehicleProfitability {
   profit: string;
   rank: number;
 }
+
+export interface TransportService {
+  id: string;
+  client: string;
+  origin: string;
+  destination: string;
+  loadType: string;
+  serviceFee: number;
+  cost: number | null;
+  paymentStatus: 'Paid' | 'Invoiced' | 'Pending';
+  status: 'Delivered' | 'In Progress' | 'Scheduled';
+  assignedVehicle: string | null;
+  assignedDriver: string | null;
+  date: string;
+}

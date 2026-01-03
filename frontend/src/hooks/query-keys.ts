@@ -13,4 +13,8 @@ export const QUERY_KEYS = {
   DASHBOARD_UTILIZATION: 'dashboard-utilization',
   DASHBOARD_RECENT_ASSIGNMENTS: 'dashboard-recent-assignments',
   DASHBOARD_ALERTS: 'dashboard-alerts',
+  SERVICES: 'services',
+  SERVICE: (id: string) => ['service', id],
+  SETTINGS: 'settings',
+  USERS: 'users',
 };

@@ -6,3 +6,5 @@ pub mod logistics;
 pub mod telemetry;
 pub mod financial;
 pub mod auth;
+pub mod settings;
+pub mod users;

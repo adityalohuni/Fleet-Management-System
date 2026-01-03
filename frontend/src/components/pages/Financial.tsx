@@ -43,16 +43,39 @@ export function Financial() {
   const totalProfit = chartData.reduce((acc, curr) => acc + curr.profit, 0);
   const profitMargin = totalRevenue > 0 ? (totalProfit / totalRevenue) * 100 : 0;
 
+  const sortedByMonthAsc = [...chartData].sort((a, b) => a.month.localeCompare(b.month));
+  const last = sortedByMonthAsc.at(-1);
+  const prev = sortedByMonthAsc.at(-2);
+
+  const percentChange = (current?: number, previous?: number) => {
+    if (current == null || previous == null) return null;
+    if (previous === 0) return null;
+    return ((current - previous) / previous) * 100;
+  };
+
+  const revenueMoM = percentChange(last?.revenue, prev?.revenue);
+  const profitMoM = percentChange(last?.profit, prev?.profit);
+  const marginMoM = percentChange(
+    last && last.revenue > 0 ? (last.profit / last.revenue) * 100 : undefined,
+    prev && prev.revenue > 0 ? (prev.profit / prev.revenue) * 100 : undefined
+  );
+
+  const formatSignedPercent = (v: number | null) => {
+    if (v == null) return "—";
+    const sign = v > 0 ? "+" : "";
+    return `${sign}${v.toFixed(1)}%`;
+  };
+
   if (isSummaryLoading || isProfitabilityLoading) {
     return <div>Loading financial data...</div>;
   }
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between border-b border-border/40 pb-6">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Financial Dashboard</h1>
-          <p className="text-muted-foreground">
+          <h1 className="text-3xl font-bold tracking-tight text-foreground mb-2">Financial Dashboard</h1>
+          <p className="text-base text-foreground-secondary">
             Analyze profitability and financial performance
           </p>
         </div>
@@ -78,36 +101,36 @@ export function Financial() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
-            <DollarSign className="h-4 w-4 text-muted-foreground" />
+            <DollarSign className="h-4 w-4 text-foreground-tertiary" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">${totalRevenue.toLocaleString()}</div>
-            <p className="text-xs text-muted-foreground">
-              +20.1% from last month
+            <p className="text-xs text-foreground-tertiary">
+              {formatSignedPercent(revenueMoM)} from last month
             </p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Net Profit</CardTitle>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+            <TrendingUp className="h-4 w-4 text-foreground-tertiary" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">${totalProfit.toLocaleString()}</div>
-            <p className="text-xs text-muted-foreground">
-              +15.2% from last month
+            <p className="text-xs text-foreground-tertiary">
+              {formatSignedPercent(profitMoM)} from last month
             </p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Profit Margin</CardTitle>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+            <TrendingUp className="h-4 w-4 text-foreground-tertiary" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{profitMargin.toFixed(1)}%</div>
-            <p className="text-xs text-muted-foreground">
-              +2.4% from last month
+            <p className="text-xs text-foreground-tertiary">
+              {formatSignedPercent(marginMoM)} from last month
             </p>
           </CardContent>
         </Card>

@@ -23,6 +23,7 @@ pub trait LogisticsServiceTrait: Send + Sync {
 
     // Transport Job
     async fn create_job(&self, dto: CreateTransportJobDto) -> Result<TransportJob, AppError>;
+    async fn list_jobs(&self) -> Result<Vec<TransportJob>, AppError>;
     async fn get_job(&self, id: Uuid) -> Result<TransportJob, AppError>;
     async fn update_job_status(&self, id: Uuid, status: JobStatus) -> Result<TransportJob, AppError>;
 
@@ -81,6 +82,10 @@ impl LogisticsServiceTrait for LogisticsService {
     // Transport Job
     async fn create_job(&self, dto: CreateTransportJobDto) -> Result<TransportJob, AppError> {
         self.job_repo.create(dto).await
+    }
+
+    async fn list_jobs(&self) -> Result<Vec<TransportJob>, AppError> {
+        self.job_repo.find_all().await
     }
 
     async fn get_job(&self, id: Uuid) -> Result<TransportJob, AppError> {

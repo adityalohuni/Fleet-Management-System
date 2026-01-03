@@ -29,7 +29,7 @@ import {
 } from "../ui/select";
 import { useDrivers, useCreateDriver, useUpdateDriver, useDeleteDriver } from "../../hooks/useDrivers";
 import { Skeleton } from "../ui/skeleton";
-import { toast } from "sonner";
+import { toast, formatApiError } from "../../lib/toast";
 import { Driver } from "../../types";
 
 export function Drivers() {
@@ -77,6 +77,8 @@ export function Drivers() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const toastId = toast.loading(editingId ? 'Updating driver...' : 'Creating driver...');
+    
     try {
       if (editingId) {
         await updateDriver.mutateAsync({
@@ -89,7 +91,7 @@ export function Drivers() {
             email,
           }
         });
-        toast.success("Driver updated successfully");
+        toast.update(toastId, 'success', "Driver updated successfully");
       } else {
         await createDriver.mutateAsync({
           name,
@@ -101,25 +103,28 @@ export function Drivers() {
           hoursThisWeek: 0,
           wageRate: 25,
         });
-        toast.success("Driver created successfully");
+        toast.update(toastId, 'success', "Driver created successfully");
       }
       setIsDialogOpen(false);
       resetForm();
     } catch (error) {
-      toast.error(editingId ? "Failed to update driver" : "Failed to create driver");
+      const errorMessage = formatApiError(error, editingId ? "Failed to update driver" : "Failed to create driver");
+      toast.update(toastId, 'error', errorMessage);
     }
   };
 
   const handleDeleteDriver = async (id: string) => {
     if (confirm("Are you sure you want to delete this driver?")) {
+      const toastId = toast.loading('Deleting driver...');
       try {
         await deleteDriver.mutateAsync(id);
-        toast.success("Driver deleted successfully");
+        toast.update(toastId, 'success', "Driver deleted successfully");
         if (selectedDriverId === id) {
           setSelectedDriverId(null);
         }
       } catch (error) {
-        toast.error("Failed to delete driver");
+        const errorMessage = formatApiError(error, "Failed to delete driver");
+        toast.update(toastId, 'error', errorMessage);
       }
     }
   };
@@ -136,11 +141,11 @@ export function Drivers() {
   };
 
   return (
-    <div className="p-6 space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="space-y-6">
+      <div className="flex items-center justify-between border-b border-border/40 pb-6">
         <div>
-          <h1 className="text-foreground mb-2">Driver Management</h1>
-          <p className="text-muted-foreground">Manage driver profiles, schedules, and assignments</p>
+          <h1 className="text-3xl font-bold tracking-tight text-foreground mb-2">Drivers</h1>
+          <p className="text-base text-foreground-secondary">Manage driver profiles, schedules, and assignments</p>
         </div>
         <Dialog open={isDialogOpen} onOpenChange={handleOpenDialog}>
           <DialogTrigger asChild>
@@ -218,10 +223,10 @@ export function Drivers() {
 
       <Card>
         <CardHeader>
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between border-b border-border/40 pb-6">
             <CardTitle>Driver Roster</CardTitle>
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-foreground-tertiary w-4 h-4" />
               <Input placeholder="Search drivers..." className="pl-9 w-64" />
             </div>
           </div>
@@ -255,7 +260,7 @@ export function Drivers() {
                         </Avatar>
                         <div>
                           <div className="font-medium">{driver.name}</div>
-                          <div className="text-xs text-muted-foreground">Rate: ${driver.wageRate}/hr</div>
+                          <div className="text-xs text-foreground-tertiary">Rate: ${driver.wageRate}/hr</div>
                         </div>
                       </div>
                     </TableCell>
@@ -291,7 +296,7 @@ export function Drivers() {
                     <TableCell>
                       <div className="text-sm">
                         <div>{driver.phone}</div>
-                        <div className="text-muted-foreground">{driver.email}</div>
+                        <div className="text-foreground-secondary">{driver.email}</div>
                       </div>
                     </TableCell>
                     <TableCell>
@@ -326,7 +331,7 @@ export function Drivers() {
                 ))}
                 {drivers?.length === 0 && (
                   <TableRow>
-                    <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
+                    <TableCell colSpan={6} className="text-center py-8 text-foreground-secondary">
                       No drivers found
                     </TableCell>
                   </TableRow>
@@ -344,33 +349,33 @@ export function Drivers() {
           </DialogHeader>
           <div className="grid grid-cols-2 gap-4 mt-4">
              <div>
-                <div className="text-sm text-muted-foreground mb-1">License</div>
+                <div className="text-sm text-foreground-tertiary mb-1">License</div>
                 <div className="text-foreground">{selectedDriver?.license}</div>
              </div>
              <div>
-                <div className="text-sm text-muted-foreground mb-1">License Expiry</div>
+                <div className="text-sm text-foreground-tertiary mb-1">License Expiry</div>
                 <div className="text-foreground">{selectedDriver?.licenseExpiry}</div>
              </div>
              <div>
-                <div className="text-sm text-muted-foreground mb-1">Status</div>
+                <div className="text-sm text-foreground-tertiary mb-1">Status</div>
                 <div className="text-foreground">{selectedDriver?.availability}</div>
              </div>
              <div>
-                <div className="text-sm text-muted-foreground mb-1">Wage Rate</div>
+                <div className="text-sm text-foreground-tertiary mb-1">Wage Rate</div>
                 <div className="text-foreground">${selectedDriver?.wageRate}/hr</div>
              </div>
              <div>
-                <div className="text-sm text-muted-foreground mb-1">Phone</div>
+                <div className="text-sm text-foreground-tertiary mb-1">Phone</div>
                 <div className="text-foreground">{selectedDriver?.phone}</div>
              </div>
              <div>
-                <div className="text-sm text-muted-foreground mb-1">Email</div>
+                <div className="text-sm text-foreground-tertiary mb-1">Email</div>
                 <div className="text-foreground">{selectedDriver?.email}</div>
              </div>
           </div>
           <div className="mt-6">
             <h3 className="text-lg font-medium mb-2">Assignment History</h3>
-            <div className="text-center py-8 text-muted-foreground border rounded-md">
+            <div className="text-center py-8 text-foreground-secondary border rounded-md">
                 Assignment history not yet connected to backend
             </div>
           </div>

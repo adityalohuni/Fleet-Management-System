@@ -1,7 +1,7 @@
 
   # Fleet Management System UI
 
-  This is a code bundle for Fleet Management System UI. The original project is available at https://www.figma.com/design/iinIle7aT6gFkQELGBxX9m/Fleet-Management-System-UI.
+  This is the frontend application for the Fleet Management System.
 
   ## Running the code
 

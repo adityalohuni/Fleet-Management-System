@@ -9,12 +9,12 @@ import * as AuthContextModule from '../../contexts/AuthContext';
 
 // Mock UI components to simplify testing and avoid issues with Radix UI in JSDOM if any
 vi.mock('../ui/card', () => ({
-  Card: ({ children }: { children: React.ReactNode }) => <div data-testid="card">{children}</div>,
-  CardHeader: ({ children }: { children: React.ReactNode }) => <div data-testid="card-header">{children}</div>,
-  CardTitle: ({ children }: { children: React.ReactNode }) => <h1 data-testid="card-title">{children}</h1>,
-  CardDescription: ({ children }: { children: React.ReactNode }) => <p data-testid="card-description">{children}</p>,
-  CardContent: ({ children }: { children: React.ReactNode }) => <div data-testid="card-content">{children}</div>,
-  CardFooter: ({ children }: { children: React.ReactNode }) => <div data-testid="card-footer">{children}</div>,
+  Card: ({ children, className }: { children: React.ReactNode; className?: string }) => <div data-testid="card" className={className}>{children}</div>,
+  CardHeader: ({ children, className }: { children: React.ReactNode; className?: string }) => <div data-testid="card-header" className={className}>{children}</div>,
+  CardTitle: ({ children, className }: { children: React.ReactNode; className?: string }) => <h1 data-testid="card-title" className={className}>{children}</h1>,
+  CardDescription: ({ children, className }: { children: React.ReactNode; className?: string }) => <p data-testid="card-description" className={className}>{children}</p>,
+  CardContent: ({ children, className }: { children: React.ReactNode; className?: string }) => <div data-testid="card-content" className={className}>{children}</div>,
+  CardFooter: ({ children, className }: { children: React.ReactNode; className?: string }) => <div data-testid="card-footer" className={className}>{children}</div>,
 }));
 
 vi.mock('../ui/select', () => ({
@@ -60,8 +60,8 @@ describe('Login Page', () => {
     it('renders login form correctly', () => {
       render(<Login />);
       
-      expect(screen.getByRole('heading', { name: /login/i })).toBeInTheDocument();
-      expect(screen.getByLabelText(/email/i)).toBeInTheDocument();
+      expect(screen.getByText(/fleet management/i)).toBeInTheDocument();
+      expect(screen.getByLabelText(/email address/i)).toBeInTheDocument();
       expect(screen.getByLabelText(/password/i)).toBeInTheDocument();
       expect(screen.getByRole('button', { name: /sign in/i })).toBeInTheDocument();
     });
@@ -70,7 +70,7 @@ describe('Login Page', () => {
       render(<Login />);
       const user = userEvent.setup();
       
-      const emailInput = screen.getByLabelText(/email/i);
+      const emailInput = screen.getByLabelText(/email address/i);
       const passwordInput = screen.getByLabelText(/password/i);
 
       await user.type(emailInput, 'test@example.com');
@@ -84,7 +84,7 @@ describe('Login Page', () => {
       render(<Login />);
       const user = userEvent.setup();
       
-      await user.type(screen.getByLabelText(/email/i), 'test@example.com');
+      await user.type(screen.getByLabelText(/email address/i), 'test@example.com');
       await user.type(screen.getByLabelText(/password/i), 'password123');
       await user.click(screen.getByRole('button', { name: /sign in/i }));
 
@@ -99,7 +99,7 @@ describe('Login Page', () => {
       render(<Login />);
       const user = userEvent.setup();
       
-      await user.type(screen.getByLabelText(/email/i), 'test@example.com');
+      await user.type(screen.getByLabelText(/email address/i), 'test@example.com');
       await user.type(screen.getByLabelText(/password/i), 'wrong');
       await user.click(screen.getByRole('button', { name: /sign in/i }));
 
@@ -112,21 +112,21 @@ describe('Login Page', () => {
       render(<Login />);
       const user = userEvent.setup();
 
-      await user.click(screen.getByText(/don't have an account\? sign up/i));
+      await user.click(screen.getByText(/sign up/i));
 
-      expect(screen.getByRole('heading', { name: /sign up/i })).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: /sign up/i })).toBeInTheDocument();
-      expect(screen.getByText(/create an account to get started/i)).toBeInTheDocument();
+      expect(screen.getByText(/create your account to get started/i)).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /create account/i })).toBeInTheDocument();
     });
 
+    it('submits registration form', async () => {
     it('submits registration form', async () => {
       render(<Login />);
       const user = userEvent.setup();
 
       // Switch to signup
-      await user.click(screen.getByText(/don't have an account\? sign up/i));
+      await user.click(screen.getByText(/sign up/i));
 
-      await user.type(screen.getByLabelText(/email/i), 'new@example.com');
+      await user.type(screen.getByLabelText(/email address/i), 'new@example.com');
       await user.type(screen.getByLabelText(/password/i), 'password123');
       
       // Mock role selection (simplified due to mock)
@@ -134,7 +134,7 @@ describe('Login Page', () => {
       // Here we assume default 'Driver' or we can try to trigger the mock change if needed.
       // The default state for role is 'Driver'.
 
-      await user.click(screen.getByRole('button', { name: /sign up/i }));
+      await user.click(screen.getByRole('button', { name: /create account/i }));
 
       expect(mockRegister).toHaveBeenCalledWith({
         email: 'new@example.com',
@@ -142,11 +142,12 @@ describe('Login Page', () => {
         role: 'Driver',
       });
     });
-
+    it('shows loading state during submission', () => {
     it('shows loading state during submission', () => {
       // Override mock for this specific test
       vi.spyOn(AuthContextModule, 'useAuth').mockReturnValue({
         login: mockLogin,
+        register: mockRegister,
         isLoading: true, // Simulate loading
         isAuthenticated: false,
         user: null,
@@ -158,7 +159,6 @@ describe('Login Page', () => {
       expect(submitButton).toBeInTheDocument();
       expect(submitButton).toBeDisabled();
     });
-  });
 
   describe('Integration Tests (with AuthProvider)', () => {
     beforeEach(() => {
@@ -183,7 +183,7 @@ describe('Login Page', () => {
       
       const user = userEvent.setup();
       
-      await user.type(screen.getByLabelText(/email/i), 'test@example.com');
+      await user.type(screen.getByLabelText(/email address/i), 'test@example.com');
       await user.type(screen.getByLabelText(/password/i), 'password123');
       await user.click(screen.getByRole('button', { name: /sign in/i }));
 
