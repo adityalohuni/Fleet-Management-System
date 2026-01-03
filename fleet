@@ -1,0 +1,27 @@
+#!/bin/bash
+set -e
+
+# Ensure we are in the project root (where this script lives)
+cd "$(dirname "$0")"
+
+# Check for cargo
+if ! command -v cargo &> /dev/null; then
+    echo "Error: Rust (cargo) is not installed."
+    exit 1
+fi
+
+BINARY="target/release/fleet_cli"
+
+# Allow explicit build of the CLI tool
+if [ "$1" = "build" ]; then
+    echo "Compiling Fleet CLI..."
+    cargo build --release -p fleet_cli
+    echo "Fleet CLI built successfully."
+    exit 0
+fi
+
+# Build (Cargo handles incremental builds, so this is fast)
+cargo build --release -p fleet_cli --quiet
+
+# Run
+exec "./$BINARY" "$@"

@@ -1,0 +1,14 @@
+/target
+.git
+.vscode
+.idea
+.DS_Store
+*.swp
+*.log
+node_modules/
+dist/
+.env
+.env.*
+
+.git_backup
+docs/FRONTEND_TEST_STRATEGY.md

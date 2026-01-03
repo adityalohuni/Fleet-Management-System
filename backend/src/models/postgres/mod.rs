@@ -1,0 +1,8 @@
+pub mod vehicle;
+pub mod user;
+pub mod driver;
+pub mod assignment;
+pub mod logistics;
+pub mod maintenance;
+pub mod telemetry;
+pub mod financial;

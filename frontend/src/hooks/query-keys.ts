@@ -1,0 +1,16 @@
+export const QUERY_KEYS = {
+  VEHICLES: 'vehicles',
+  VEHICLE: (id: string) => ['vehicle', id],
+  VEHICLE_MAINTENANCE: (id: string) => ['vehicle', id, 'maintenance'],
+  DRIVERS: 'drivers',
+  DRIVER: (id: string) => ['driver', id],
+  DRIVER_ASSIGNMENTS: (id: string) => ['driver', id, 'assignments'],
+  ASSIGNMENTS: 'assignments',
+  MAINTENANCE_ALERTS: 'maintenance-alerts',
+  MAINTENANCE_RECORDS: 'maintenance-records',
+  MAINTENANCE_COSTS: 'maintenance-costs',
+  DASHBOARD_METRICS: 'dashboard-metrics',
+  DASHBOARD_UTILIZATION: 'dashboard-utilization',
+  DASHBOARD_RECENT_ASSIGNMENTS: 'dashboard-recent-assignments',
+  DASHBOARD_ALERTS: 'dashboard-alerts',
+};
