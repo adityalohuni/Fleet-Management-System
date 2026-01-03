@@ -27,20 +27,26 @@ export function Sidebar({ currentPage, onNavigate }: SidebarProps) {
   ];
 
   return (
-    <div className="w-64 glass border-r border-border h-screen flex flex-col sticky top-0">
-      <div className="p-6 border-b border-border">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-gradient-to-br from-primary to-primary-hover rounded-2xl flex items-center justify-center shadow-lg">
-            <Truck className="w-6 h-6 text-white" />
-          </div>
-          <div>
-            <div className="font-semibold text-foreground">FleetMaster</div>
-            <div className="text-xs text-muted-foreground">Pro</div>
-          </div>
+    <div className="w-64 bg-background/95 backdrop-blur-xl border-r border-border h-screen flex flex-col sticky top-0 z-40">
+      <div className="px-6 py-8">
+        <div className="flex items-center gap-2 mb-6">
+          <Truck className="w-6 h-6 text-primary" />
+          <span className="text-xl font-bold tracking-tight text-foreground">FleetMaster</span>
+        </div>
+        
+        <div className="relative">
+          <input 
+            type="text" 
+            placeholder="Search" 
+            className="w-full bg-secondary/50 text-sm px-3 py-1.5 rounded-lg border-none focus:ring-1 focus:ring-primary/50 outline-none placeholder:text-muted-foreground transition-all"
+          />
         </div>
       </div>
 
-      <nav className="flex-1 px-3 py-4 space-y-1">
+      <nav className="flex-1 px-4 space-y-1 overflow-y-auto">
+        <div className="px-2 mb-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+          Menu
+        </div>
         {menuItems.map((item) => {
           const Icon = item.icon;
           const isActive = currentPage === item.id;
@@ -49,21 +55,29 @@ export function Sidebar({ currentPage, onNavigate }: SidebarProps) {
             <button
               key={item.id}
               onClick={() => onNavigate(item.id)}
-              className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-200 group ${
+              className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 group ${
                 isActive
-                  ? "bg-sidebar-accent text-sidebar-accent-foreground"
-                  : "text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent/50"
+                  ? "bg-primary/10 text-primary"
+                  : "text-muted-foreground hover:bg-secondary hover:text-foreground"
               }`}
             >
-              <Icon className={`w-5 h-5 transition-colors ${isActive ? "text-sidebar-accent-foreground" : ""}`} />
-              <span className={isActive ? "font-medium" : ""}>{item.label}</span>
+              <Icon className={`w-4 h-4 ${isActive ? "text-primary" : "text-muted-foreground group-hover:text-foreground"}`} />
+              <span>{item.label}</span>
             </button>
           );
         })}
       </nav>
 
-      <div className="p-4 border-t border-border">
-        <div className="text-xs text-muted-foreground">Version 1.0.0</div>
+      <div className="p-4 border-t border-border bg-background/50 backdrop-blur-md">
+        <div className="flex items-center gap-3 px-2">
+          <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-primary to-purple-500 flex items-center justify-center text-white text-xs font-bold">
+            FM
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="text-sm font-medium truncate">Fleet Manager</div>
+            <div className="text-xs text-muted-foreground truncate">admin@fleet.com</div>
+          </div>
+        </div>
       </div>
     </div>
   );

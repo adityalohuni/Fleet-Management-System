@@ -5,6 +5,7 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import App from "./App.tsx";
 import { queryClient } from './lib/query-client';
 import { OpenAPI } from './client';
+import { AuthProvider } from "./contexts/AuthContext";
 import "./index.css";
 
 // Configure API Client
@@ -15,7 +16,9 @@ OpenAPI.TOKEN = async () => {
 
 createRoot(document.getElementById("root")!).render(
   <QueryClientProvider client={queryClient}>
-    <App />
+    <AuthProvider>
+      <App />
+    </AuthProvider>
     <ReactQueryDevtools initialIsOpen={false} />
   </QueryClientProvider>
 );  

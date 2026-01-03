@@ -18,6 +18,12 @@ export interface LoginCredentials {
   password: string;
 }
 
+export interface RegisterCredentials {
+  email: string;
+  password: string;
+  role: string;
+}
+
 export const AuthService = {
   login: async (credentials: LoginCredentials): Promise<LoginResponse> => {
     // 1. Login to get token
@@ -50,6 +56,39 @@ export const AuthService = {
     return {
       token,
       user
+    };
+  },
+
+  register: async (credentials: RegisterCredentials): Promise<LoginResponse> => {
+    const response = await fetch('/api/auth/register', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        email: credentials.email,
+        password_hash: credentials.password, // Backend expects password in password_hash field
+        role: credentials.role,
+        is_active: true,
+      }),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(errorText || 'Registration failed');
+    }
+
+    const data = await response.json();
+    const token = data.token;
+    const user = data.user;
+
+    localStorage.setItem('token', token);
+    OpenAPI.TOKEN = token;
+    localStorage.setItem('user', JSON.stringify(user));
+
+    return {
+      token,
+      user,
     };
   },
 

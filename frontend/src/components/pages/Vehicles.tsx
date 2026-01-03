@@ -123,15 +123,15 @@ export function Vehicles() {
   const isSubmitting = createVehicle.isPending || updateVehicle.isPending;
 
   return (
-    <div className="p-6 space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="space-y-6 pb-8">
+      <div className="flex items-center justify-between border-b border-border/40 pb-6">
         <div>
-          <h1 className="text-foreground mb-2">Vehicle Management</h1>
-          <p className="text-muted-foreground">Manage fleet vehicles and track maintenance</p>
+          <h1 className="text-4xl font-bold tracking-tight text-foreground mb-1">Vehicles</h1>
+          <p className="text-lg text-muted-foreground font-medium">Manage fleet vehicles and track maintenance</p>
         </div>
         <Dialog open={isDialogOpen} onOpenChange={handleOpenDialog}>
           <DialogTrigger asChild>
-            <Button className="gap-2" onClick={() => resetForm()}>
+            <Button className="gap-2 rounded-full px-6" onClick={() => resetForm()}>
               <Plus className="w-4 h-4" />
               Add Vehicle
             </Button>

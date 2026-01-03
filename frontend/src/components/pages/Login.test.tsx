@@ -14,12 +14,22 @@ vi.mock('../ui/card', () => ({
   CardTitle: ({ children }: { children: React.ReactNode }) => <h1 data-testid="card-title">{children}</h1>,
   CardDescription: ({ children }: { children: React.ReactNode }) => <p data-testid="card-description">{children}</p>,
   CardContent: ({ children }: { children: React.ReactNode }) => <div data-testid="card-content">{children}</div>,
+  CardFooter: ({ children }: { children: React.ReactNode }) => <div data-testid="card-footer">{children}</div>,
+}));
+
+vi.mock('../ui/select', () => ({
+  Select: ({ children, onValueChange }: any) => <div data-testid="select" onClick={() => onValueChange('Manager')}>{children}</div>,
+  SelectTrigger: ({ children }: any) => <div data-testid="select-trigger">{children}</div>,
+  SelectValue: () => <div data-testid="select-value"></div>,
+  SelectContent: ({ children }: any) => <div data-testid="select-content">{children}</div>,
+  SelectItem: ({ children, value }: any) => <div data-testid={`select-item-${value}`}>{children}</div>,
 }));
 
 // Mock AuthService for Integration tests
 vi.mock('../../services/auth.service', () => ({
   AuthService: {
     login: vi.fn(),
+    register: vi.fn(),
     logout: vi.fn(),
     getCurrentUser: vi.fn(),
     isAuthenticated: vi.fn(),
@@ -29,11 +39,13 @@ vi.mock('../../services/auth.service', () => ({
 describe('Login Page', () => {
   describe('Unit/Component Tests', () => {
     const mockLogin = vi.fn();
+    const mockRegister = vi.fn();
     
     beforeEach(() => {
       // Spy on useAuth to mock it for component tests
       vi.spyOn(AuthContextModule, 'useAuth').mockReturnValue({
         login: mockLogin,
+        register: mockRegister,
         isLoading: false,
         isAuthenticated: false,
         user: null,
@@ -92,7 +104,42 @@ describe('Login Page', () => {
       await user.click(screen.getByRole('button', { name: /sign in/i }));
 
       await waitFor(() => {
-        expect(screen.getByText(/invalid credentials/i)).toBeInTheDocument();
+        expect(screen.getByText(/failed/i)).toBeInTheDocument();
+      });
+    });
+
+    it('switches to signup mode', async () => {
+      render(<Login />);
+      const user = userEvent.setup();
+
+      await user.click(screen.getByText(/don't have an account\? sign up/i));
+
+      expect(screen.getByRole('heading', { name: /sign up/i })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /sign up/i })).toBeInTheDocument();
+      expect(screen.getByText(/create an account to get started/i)).toBeInTheDocument();
+    });
+
+    it('submits registration form', async () => {
+      render(<Login />);
+      const user = userEvent.setup();
+
+      // Switch to signup
+      await user.click(screen.getByText(/don't have an account\? sign up/i));
+
+      await user.type(screen.getByLabelText(/email/i), 'new@example.com');
+      await user.type(screen.getByLabelText(/password/i), 'password123');
+      
+      // Mock role selection (simplified due to mock)
+      // In a real test with full Radix UI, we'd interact with the select.
+      // Here we assume default 'Driver' or we can try to trigger the mock change if needed.
+      // The default state for role is 'Driver'.
+
+      await user.click(screen.getByRole('button', { name: /sign up/i }));
+
+      expect(mockRegister).toHaveBeenCalledWith({
+        email: 'new@example.com',
+        password: 'password123',
+        role: 'Driver',
       });
     });
 
@@ -107,8 +154,9 @@ describe('Login Page', () => {
       });
 
       render(<Login />);
-      expect(screen.getByRole('button')).toHaveTextContent(/signing in/i);
-      expect(screen.getByRole('button')).toBeDisabled();
+      const submitButton = screen.getByRole('button', { name: /signing in/i });
+      expect(submitButton).toBeInTheDocument();
+      expect(submitButton).toBeDisabled();
     });
   });
 
