@@ -97,8 +97,6 @@ export function Dashboard() {
 
         <Card className="border-border/50 shadow-sm hover:shadow-md transition-all duration-300 bg-card/50">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-        <Card className="border-border/50 shadow-sm hover:shadow-md transition-all duration-300 bg-card/50">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wide">Services in Progress</CardTitle>
             <div className="w-5 h-5 rounded-full bg-chart-3/20 flex items-center justify-center">
               <div className="w-2.5 h-2.5 bg-chart-3 rounded-full" />
