@@ -16,26 +16,32 @@ impl FinancialRepository {
             WITH monthly_revenue AS (
                 SELECT 
                     TO_CHAR(updated_at, 'YYYY-MM') as month, 
-                    SUM(agreed_price) as revenue 
+                    COALESCE(SUM(agreed_price), 0)::decimal as revenue 
                 FROM transport_jobs 
-                WHERE status = 'PAID' 
-                GROUP BY 1
+                GROUP BY TO_CHAR(updated_at, 'YYYY-MM')
             ),
             monthly_cost AS (
                 SELECT 
                     TO_CHAR(date, 'YYYY-MM') as month, 
-                    SUM(cost) as cost 
+                    COALESCE(SUM(cost), 0)::decimal as cost 
                 FROM maintenance_records 
-                GROUP BY 1
+                WHERE date IS NOT NULL
+                GROUP BY TO_CHAR(date, 'YYYY-MM')
+            ),
+            all_months AS (
+                SELECT month FROM monthly_revenue
+                UNION
+                SELECT month FROM monthly_cost
             )
             SELECT 
-                COALESCE(r.month, c.month) as month,
+                m.month,
                 COALESCE(r.revenue, 0) as revenue,
                 COALESCE(c.cost, 0) as cost,
                 (COALESCE(r.revenue, 0) - COALESCE(c.cost, 0)) as profit
-            FROM monthly_revenue r
-            FULL OUTER JOIN monthly_cost c ON r.month = c.month
-            ORDER BY month DESC
+            FROM all_months m
+            LEFT JOIN monthly_revenue r ON m.month = r.month
+            LEFT JOIN monthly_cost c ON m.month = c.month
+            ORDER BY m.month DESC
         "#;
 
         let summaries = sqlx::query_as::<_, MonthlyFinancialSummary>(query)
@@ -47,22 +53,22 @@ impl FinancialRepository {
     }
 
     pub async fn get_vehicle_profitability(&self) -> Result<Vec<VehicleProfitability>, AppError> {
-        // Note: Currently revenue is not linked to vehicles, so we only track costs.
         let query = r#"
             WITH vehicle_costs AS (
                 SELECT 
                     vehicle_id, 
-                    SUM(cost) as cost 
+                    COALESCE(SUM(cost), 0)::decimal as total_maintenance_cost
                 FROM maintenance_records 
+                WHERE vehicle_id IS NOT NULL
                 GROUP BY vehicle_id
             )
             SELECT 
                 v.id as vehicle_id,
                 v.license_plate as vehicle_plate,
-                0::numeric as revenue,
-                COALESCE(c.cost, 0) as cost,
-                (0 - COALESCE(c.cost, 0)) as profit,
-                RANK() OVER (ORDER BY (0 - COALESCE(c.cost, 0)) DESC)::integer as rank
+                0::decimal as revenue,
+                COALESCE(c.total_maintenance_cost, 0)::decimal as cost,
+                (0::decimal - COALESCE(c.total_maintenance_cost, 0)::decimal) as profit,
+                RANK() OVER (ORDER BY (0::decimal - COALESCE(c.total_maintenance_cost, 0)::decimal) DESC)::integer as rank
             FROM vehicles v
             LEFT JOIN vehicle_costs c ON v.id = c.vehicle_id
             ORDER BY profit DESC

@@ -32,9 +32,9 @@ impl UserRepositoryTrait for UserRepository {
         let user = sqlx::query_as::<_, User>(
             r#"
             INSERT INTO users (
-                id, email, password_hash, role, is_active, created_at, updated_at
+                id, email, password_hash, role, name, is_active, created_at, updated_at
             )
-            VALUES ($1, $2, $3, $4, $5, NOW(), NOW())
+            VALUES ($1, $2, $3, $4, $5, $6, NOW(), NOW())
             RETURNING *
             "#
         )
@@ -42,6 +42,7 @@ impl UserRepositoryTrait for UserRepository {
         .bind(dto.email)
         .bind(dto.password_hash)
         .bind(dto.role)
+            .bind(dto.name)
         .bind(dto.is_active)
         .fetch_one(&self.pool)
         .await

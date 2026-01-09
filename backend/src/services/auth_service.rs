@@ -15,10 +15,12 @@ use crate::error::AppError;
 use crate::models::postgres::user::{User, CreateUserDto, UserRole};
 use crate::repositories::postgres::user_repo::UserRepositoryTrait;
 
-#[derive(Debug, Serialize, Deserialize, ToSchema)]
+#[derive(Debug, Serialize, Deserialize, ToSchema, Clone)]
 pub struct Claims {
-    pub sub: Uuid,
+    pub sub: Uuid,        // Standard JWT subject claim (user ID)
+    pub user_id: Uuid,    // Explicit user ID for clarity
     pub role: UserRole,
+    pub is_active: bool,
     pub exp: usize,
 }
 
@@ -60,7 +62,9 @@ impl AuthService {
 
         let claims = Claims {
             sub: user.id,
+            user_id: user.id,
             role: user.role.clone(),
+            is_active: user.is_active,
             exp: expiration as usize,
         };
 

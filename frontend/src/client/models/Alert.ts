@@ -2,21 +2,14 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+import type { AlertSeverity } from './AlertSeverity';
 export type Alert = {
-    id?: string;
-    entity_id?: string;
-    type?: string;
-    severity?: Alert.severity;
-    is_resolved?: boolean;
-    created_at?: string;
+    created_at: string;
+    entity_id: string;
+    id: string;
+    is_resolved: boolean;
     resolved_at?: string | null;
+    severity: AlertSeverity;
+    type: string;
 };
-export namespace Alert {
-    export enum severity {
-        LOW = 'Low',
-        MEDIUM = 'Medium',
-        HIGH = 'High',
-        CRITICAL = 'Critical',
-    }
-}
 

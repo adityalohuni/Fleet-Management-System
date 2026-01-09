@@ -3,7 +3,7 @@ interface AuthToggleProps {
   onToggle: () => void;
 }
 
-export function AuthToggle({ isLogin, onToggle }: AuthToggleProps) {
+export function AuthToggle({ isLogin = true, onToggle }: AuthToggleProps) {
   return (
     <div className="text-center pt-10 mt-4 border-t border-border">
       <p className="text-sm leading-relaxed">

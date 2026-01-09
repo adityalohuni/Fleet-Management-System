@@ -1,15 +1,26 @@
-import { FinancialService as ClientFinancialService } from '../client';
+import api from './api';
 import { MonthlyFinancialSummary, VehicleProfitability } from '../types';
 
 export const FinancialService = {
-  getMonthlySummary: async (): Promise<MonthlyFinancialSummary[]> => {
+  getMonthlySummary: async (startDate?: string, endDate?: string): Promise<MonthlyFinancialSummary[]> => {
     try {
-      const summary = await ClientFinancialService.getMonthlySummary();
+      const params = new URLSearchParams();
+      if (startDate) params.append('start_date', startDate);
+      if (endDate) params.append('end_date', endDate);
+      
+      const queryString = params.toString();
+      const url = queryString ? `/financial/summary?${queryString}` : '/financial/summary';
+      
+      const { data: summary } = await api.get<any[]>(url);
+      if (!Array.isArray(summary)) {
+        console.warn('Unexpected response format from getMonthlySummary');
+        return [];
+      }
       return summary.map(s => ({
         month: s.month || '',
-        revenue: s.revenue || '0',
-        cost: s.cost || '0',
-        profit: s.profit || '0',
+        revenue: String(s.revenue || '0'),
+        cost: String(s.cost || '0'),
+        profit: String(s.profit || '0'),
       }));
     } catch (error) {
       console.error('Failed to fetch financial summary', error);
@@ -17,15 +28,26 @@ export const FinancialService = {
     }
   },
 
-  getVehicleProfitability: async (): Promise<VehicleProfitability[]> => {
+  getVehicleProfitability: async (startDate?: string, endDate?: string): Promise<VehicleProfitability[]> => {
     try {
-      const profitability = await ClientFinancialService.getVehicleProfitability();
+      const params = new URLSearchParams();
+      if (startDate) params.append('start_date', startDate);
+      if (endDate) params.append('end_date', endDate);
+      
+      const queryString = params.toString();
+      const url = queryString ? `/financial/vehicle-profitability?${queryString}` : '/financial/vehicle-profitability';
+      
+      const { data: profitability } = await api.get<any[]>(url);
+      if (!Array.isArray(profitability)) {
+        console.warn('Unexpected response format from getVehicleProfitability');
+        return [];
+      }
       return profitability.map(p => ({
         vehicle_id: p.vehicle_id || '',
         vehicle_plate: p.vehicle_plate || '',
-        revenue: p.revenue || '0',
-        cost: p.cost || '0',
-        profit: p.profit || '0',
+        revenue: String(p.revenue || '0'),
+        cost: String(p.cost || '0'),
+        profit: String(p.profit || '0'),
         rank: p.rank || 0,
       }));
     } catch (error) {

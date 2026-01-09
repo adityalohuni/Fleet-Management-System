@@ -16,6 +16,7 @@ pub trait AssignmentServiceTrait: Send + Sync {
     async fn complete_assignment(&self, id: Uuid) -> Result<VehicleAssignment, AppError>;
     async fn get_assignment(&self, id: Uuid) -> Result<VehicleAssignment, AppError>;
     async fn list_assignments(&self) -> Result<Vec<VehicleAssignment>, AppError>;
+    async fn get_assignments_by_driver(&self, driver_id: Uuid) -> Result<Vec<VehicleAssignment>, AppError>;
 }
 
 pub struct AssignmentService {
@@ -95,6 +96,10 @@ impl AssignmentServiceTrait for AssignmentService {
 
     async fn list_assignments(&self) -> Result<Vec<VehicleAssignment>, AppError> {
         self.assignment_repo.find_all().await
+    }
+
+    async fn get_assignments_by_driver(&self, driver_id: Uuid) -> Result<Vec<VehicleAssignment>, AppError> {
+        self.assignment_repo.find_by_driver_id(driver_id).await
     }
 }
 

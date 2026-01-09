@@ -2,22 +2,15 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+import type { MaintenanceType } from './MaintenanceType';
 export type MaintenanceRecord = {
-    id?: string;
-    vehicle_id?: string;
-    type?: MaintenanceRecord.type;
-    cost?: string;
-    date?: string;
-    provider?: string;
+    cost: string;
+    created_at: string;
+    date: string;
     description?: string | null;
-    created_at?: string;
+    id: string;
+    provider: string;
+    type: MaintenanceType;
+    vehicle_id: string;
 };
-export namespace MaintenanceRecord {
-    export enum type {
-        PREVENTIVE = 'Preventive',
-        REPAIR = 'Repair',
-        INSPECTION = 'Inspection',
-        ACCIDENT = 'Accident',
-    }
-}
 

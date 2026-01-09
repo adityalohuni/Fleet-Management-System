@@ -2,8 +2,9 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export type UpdateAssignmentDto = {
-    status?: string;
-    end_time?: string;
+export type Role = {
+    id: string;
+    name: string;
+    permissions: any;
 };
 

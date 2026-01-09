@@ -27,16 +27,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
-import { useVehicles, useCreateVehicle, useDeleteVehicle, useUpdateVehicle } from "../../hooks/useVehicles";
+import { useVehicles, useCreateVehicle, useDeleteVehicle, useUpdateVehicle, useVehicleMaintenance } from "../../hooks/useVehicles";
+import { useAssignmentsByVehicle } from "../../hooks/useAssignments";
 import { Skeleton } from "../ui/skeleton";
 import { toast, formatApiError } from "../../lib/toast";
 import { Vehicle } from "../../types";
+import { validateVehicleForm } from "../../lib/validation";
 
 export function Vehicles() {
   const [selectedVehicleId, setSelectedVehicleId] = useState<string | null>(null);
   const [filterStatus, setFilterStatus] = useState<string>("all");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
   
   // Form state
   const [newVehicleModel, setNewVehicleModel] = useState("");
@@ -47,12 +50,15 @@ export function Vehicles() {
   const createVehicle = useCreateVehicle();
   const updateVehicle = useUpdateVehicle();
   const deleteVehicle = useDeleteVehicle();
+  const { data: maintenanceHistory, isLoading: isMaintLoading } = useVehicleMaintenance(selectedVehicleId || "");
+  const { data: assignments, isLoading: isAssignmentsLoading } = useAssignmentsByVehicle(selectedVehicleId || "");
 
   const resetForm = () => {
     setNewVehicleModel("");
     setNewVehicleType("Truck");
     setNewVehicleStatus("Available");
     setEditingId(null);
+    setValidationErrors({});
   };
 
   const handleOpenDialog = (open: boolean) => {
@@ -67,11 +73,25 @@ export function Vehicles() {
     setNewVehicleType(vehicle.type);
     setNewVehicleStatus(vehicle.status);
     setEditingId(vehicle.id);
+    setValidationErrors({});
     setIsDialogOpen(true);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validate form
+    const validation = validateVehicleForm({
+      model: newVehicleModel,
+      type: newVehicleType,
+      status: newVehicleStatus,
+    });
+
+    if (!validation.isValid) {
+      setValidationErrors(validation.errors);
+      return;
+    }
+
     const toastId = toast.loading(editingId ? 'Updating vehicle...' : 'Creating vehicle...');
     
     try {
@@ -131,8 +151,8 @@ export function Vehicles() {
     <div className="space-y-6 pb-8">
       <div className="flex items-start justify-between border-b border-border/40 pb-6">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-foreground mb-2">Vehicles</h1>
-          <p className="text-base text-foreground-secondary">Manage fleet vehicles and track maintenance</p>
+          <h1 className="page-header mb-2">Vehicles</h1>
+          <p className="page-subtitle">Manage fleet vehicles and track maintenance</p>
         </div>
         <Dialog open={isDialogOpen} onOpenChange={handleOpenDialog}>
           <DialogTrigger asChild>
@@ -147,18 +167,29 @@ export function Vehicles() {
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-4 mt-4">
               <div className="space-y-2">
-                <label className="text-sm font-medium">Model</label>
+                <label className="text-sm font-medium">Model *</label>
                 <Input 
                   placeholder="e.g. Ford F-150" 
                   value={newVehicleModel}
-                  onChange={(e) => setNewVehicleModel(e.target.value)}
-                  required
+                  onChange={(e) => {
+                    setNewVehicleModel(e.target.value);
+                    if (validationErrors.model) {
+                      setValidationErrors({...validationErrors, model: ''});
+                    }
+                  }}
+                  className={validationErrors.model ? 'border-red-500' : ''}
                 />
+                {validationErrors.model && <p className="text-sm text-red-500">{validationErrors.model}</p>}
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-medium">Type</label>
-                <Select value={newVehicleType} onValueChange={setNewVehicleType}>
-                  <SelectTrigger>
+                <label className="text-sm font-medium">Type *</label>
+                <Select value={newVehicleType} onValueChange={(val) => {
+                  setNewVehicleType(val);
+                  if (validationErrors.type) {
+                    setValidationErrors({...validationErrors, type: ''});
+                  }
+                }}>
+                  <SelectTrigger className={validationErrors.type ? 'border-red-500' : ''}>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -167,11 +198,17 @@ export function Vehicles() {
                     <SelectItem value="Car">Car</SelectItem>
                   </SelectContent>
                 </Select>
+                {validationErrors.type && <p className="text-sm text-red-500">{validationErrors.type}</p>}
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-medium">Status</label>
-                <Select value={newVehicleStatus} onValueChange={setNewVehicleStatus}>
-                  <SelectTrigger>
+                <label className="text-sm font-medium">Status *</label>
+                <Select value={newVehicleStatus} onValueChange={(val) => {
+                  setNewVehicleStatus(val);
+                  if (validationErrors.status) {
+                    setValidationErrors({...validationErrors, status: ''});
+                  }
+                }}>
+                  <SelectTrigger className={validationErrors.status ? 'border-red-500' : ''}>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -180,6 +217,7 @@ export function Vehicles() {
                     <SelectItem value="In Maintenance">In Maintenance</SelectItem>
                   </SelectContent>
                 </Select>
+                {validationErrors.status && <p className="text-sm text-red-500">{validationErrors.status}</p>}
               </div>
               <div className="flex justify-end gap-2 mt-6">
                 <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
@@ -370,21 +408,109 @@ export function Vehicles() {
             </TabsContent>
 
             <TabsContent value="maintenance">
-              <div className="text-center py-8 text-foreground-secondary">
-                Maintenance history not yet connected to backend
-              </div>
+              {isMaintLoading ? (
+                <div className="space-y-4">
+                  {[...Array(3)].map((_, i) => (
+                    <Skeleton key={i} className="h-24 w-full" />
+                  ))}
+                </div>
+              ) : maintenanceHistory && maintenanceHistory.length > 0 ? (
+                <div className="space-y-4">
+                  {maintenanceHistory.map((record: any, idx: number) => (
+                    <div key={idx} className="border border-border rounded p-4 space-y-2">
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <div className="text-sm text-foreground-tertiary">Type</div>
+                          <div className="text-foreground font-medium">{record.type || record.maintenance_type}</div>
+                        </div>
+                        <div className="text-right">
+                          <div className="text-sm text-foreground-tertiary">Date</div>
+                          <div className="text-foreground">{new Date(record.date || record.maintenance_date).toLocaleDateString()}</div>
+                        </div>
+                      </div>
+                      {record.description && (
+                        <div>
+                          <div className="text-sm text-foreground-tertiary">Description</div>
+                          <div className="text-foreground">{record.description}</div>
+                        </div>
+                      )}
+                      {(record.cost || record.maintenance_cost) && (
+                        <div>
+                          <div className="text-sm text-foreground-tertiary">Cost</div>
+                          <div className="text-foreground">${(parseFloat(record.cost || record.maintenance_cost || "0") || 0).toFixed(2)}</div>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-8 text-foreground-secondary">
+                  No maintenance records available
+                </div>
+              )}
             </TabsContent>
 
             <TabsContent value="documents">
-              <div className="text-center py-8 text-foreground-secondary">
-                No documents uploaded yet
+              <div className="space-y-4">
+                <div className="border-2 border-dashed border-border rounded-lg p-8 text-center hover:bg-accent/30 transition-colors cursor-pointer">
+                  <div className="text-sm text-foreground-secondary">Drag and drop documents or click to upload</div>
+                  <div className="text-xs text-foreground-tertiary mt-1">Supported: PDF, JPG, PNG (Max 10MB)</div>
+                </div>
+                <div className="text-center py-8 text-foreground-secondary">
+                  <p className="mb-2">No documents uploaded yet</p>
+                  <p className="text-xs">Upload registration, insurance, maintenance logs, and other vehicle documents</p>
+                </div>
               </div>
             </TabsContent>
 
             <TabsContent value="assignments">
-              <div className="text-center py-8 text-foreground-secondary">
-                No assignment history available
-              </div>
+              {isAssignmentsLoading ? (
+                <div className="space-y-4">
+                  {[...Array(3)].map((_, i) => (
+                    <Skeleton key={i} className="h-20 w-full" />
+                  ))}
+                </div>
+              ) : assignments && assignments.length > 0 ? (
+                <div className="space-y-4">
+                  {assignments.map((assignment: any) => (
+                    <div key={assignment.id} className="border border-border rounded p-4 space-y-2">
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <div className="text-sm text-foreground-tertiary">Driver ID</div>
+                          <div className="text-foreground font-medium">{assignment.driverId}</div>
+                        </div>
+                        <Badge
+                          className={
+                            assignment.status === "Active"
+                              ? "bg-chart-2"
+                              : assignment.status === "Completed"
+                              ? "bg-chart-1"
+                              : "bg-chart-3"
+                          }
+                        >
+                          {assignment.status}
+                        </Badge>
+                      </div>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <div className="text-sm text-foreground-tertiary">Start</div>
+                          <div className="text-foreground">{new Date(assignment.startDate).toLocaleDateString()}</div>
+                        </div>
+                        <div>
+                          <div className="text-sm text-foreground-tertiary">End</div>
+                          <div className="text-foreground">
+                            {assignment.endDate ? new Date(assignment.endDate).toLocaleDateString() : 'Ongoing'}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-8 text-foreground-secondary">
+                  No assignments for this vehicle
+                </div>
+              )}
             </TabsContent>
           </Tabs>
         </DialogContent>

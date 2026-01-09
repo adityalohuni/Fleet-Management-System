@@ -17,6 +17,7 @@ export function Login() {
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+    const [name, setName] = useState("");
   const [role, setRole] = useState("Driver");
   const [theme, setTheme] = useState<"light" | "dark">("light");
 
@@ -46,7 +47,7 @@ export function Login() {
         await login({ email, password });
         toast.update(toastId, 'success', "Welcome back!");
       } else {
-        await register({ email, password, role });
+        await register({ email, password, role, name: name.trim() || undefined });
         toast.update(toastId, 'success', "Account created successfully!");
       }
     } catch (err: any) {
@@ -73,6 +74,21 @@ export function Login() {
 
             <CardContent className="space-y-10 px-12 pb-14">
               <form onSubmit={handleSubmit} className="space-y-6">
+                {!isLogin && (
+                  <div className="space-y-2">
+                    <label htmlFor="name" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                      Name
+                    </label>
+                    <input
+                      id="name"
+                      type="text"
+                      placeholder="John Doe"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                    />
+                  </div>
+                )}
                 <EmailInput value={email} onChange={setEmail} />
                 
                 <PasswordInput value={password} onChange={setPassword} />
@@ -94,3 +110,4 @@ export function Login() {
     </div>
   );
 }
+

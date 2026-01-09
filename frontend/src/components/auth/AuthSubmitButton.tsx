@@ -5,7 +5,7 @@ interface AuthSubmitButtonProps {
   isLogin: boolean;
 }
 
-export function AuthSubmitButton({ isLoading, isLogin }: AuthSubmitButtonProps) {
+export function AuthSubmitButton({ isLoading, isLogin = true }: AuthSubmitButtonProps) {
   return (
     <Button 
       className="w-full h-14 rounded-xl font-bold text-base hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 mt-10 disabled:opacity-70 disabled:cursor-not-allowed" 

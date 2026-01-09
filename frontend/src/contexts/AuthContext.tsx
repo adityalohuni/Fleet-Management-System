@@ -18,11 +18,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     const initAuth = () => {
-      const currentUser = AuthService.getCurrentUser();
-      if (currentUser && AuthService.isAuthenticated()) {
-        setUser(currentUser);
+      try {
+        const currentUser = AuthService.getCurrentUser();
+        if (currentUser && AuthService.isAuthenticated()) {
+          setUser(currentUser);
+        }
+      } catch (error) {
+        console.error('Error initializing auth:', error);
+      } finally {
+        setIsLoading(false);
       }
-      setIsLoading(false);
     };
     initAuth();
   }, []);

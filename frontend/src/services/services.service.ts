@@ -1,5 +1,5 @@
 import api from './api';
-import type { CustomerDto, RouteDto, ShipmentDto, TransportJobDto } from '../dto/services.dto';
+import type { CustomerDto, RouteDto, ShipmentDto, TransportJobDto, CreateCustomerDto, CreateRouteDto, CreateShipmentDto, CreateTransportJobDto } from '../dto/services.dto';
 
 export interface TransportServiceView {
   id: string;
@@ -101,5 +101,31 @@ export const ServicesService = {
     // No dedicated endpoint; reuse list and pick.
     const all = await ServicesService.getAll();
     return all.find((s) => s.id === id) ?? null;
+  },
+
+  // Create operations
+  createCustomer: async (customer: CreateCustomerDto): Promise<CustomerDto> => {
+    const { data } = await api.post<CustomerDto>('/logistics/customers', customer);
+    return data;
+  },
+
+  createJob: async (job: CreateTransportJobDto): Promise<TransportJobDto> => {
+    const { data } = await api.post<TransportJobDto>('/logistics/jobs', job);
+    return data;
+  },
+
+  createRoute: async (route: CreateRouteDto): Promise<RouteDto> => {
+    const { data } = await api.post<RouteDto>('/logistics/routes', route);
+    return data;
+  },
+
+  createShipment: async (shipment: CreateShipmentDto): Promise<ShipmentDto> => {
+    const { data } = await api.post<ShipmentDto>('/logistics/shipments', shipment);
+    return data;
+  },
+
+  listCustomers: async (): Promise<CustomerDto[]> => {
+    const { data } = await api.get<CustomerDto[]>('/logistics/customers');
+    return Array.isArray(data) ? data : [];
   },
 };

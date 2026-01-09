@@ -18,6 +18,7 @@ export interface LoginCredentials {
 }
 
 export interface RegisterCredentials {
+    name?: string;
   email: string;
   password: string;
   role: string;
@@ -116,6 +117,7 @@ export const AuthService = {
           email: credentials.email,
           password_hash: credentials.password, // Backend expects password in password_hash field
           role: credentials.role,
+                    name: credentials.name,
           is_active: true,
         }),
       });

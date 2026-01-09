@@ -1,6 +1,6 @@
 use sqlx::PgPool;
 use uuid::Uuid;
-use crate::models::postgres::driver::{Driver, CreateDriverDto, DriverStatus};
+use crate::models::postgres::driver::{Driver, DriverWithUser, CreateDriverDto, DriverStatus};
 use crate::error::AppError;
 use async_trait::async_trait;
 
@@ -9,7 +9,9 @@ use async_trait::async_trait;
 pub trait DriverRepositoryTrait: Send + Sync {
     async fn create(&self, dto: CreateDriverDto) -> Result<Driver, AppError>;
     async fn find_all(&self) -> Result<Vec<Driver>, AppError>;
+    async fn find_all_with_user(&self) -> Result<Vec<DriverWithUser>, AppError>;
     async fn find_by_id(&self, id: Uuid) -> Result<Option<Driver>, AppError>;
+    async fn find_by_id_with_user(&self, id: Uuid) -> Result<Option<DriverWithUser>, AppError>;
     async fn update_status(&self, id: Uuid, status: DriverStatus) -> Result<Driver, AppError>;
     async fn delete(&self, id: Uuid) -> Result<(), AppError>;
 }
@@ -59,9 +61,64 @@ impl DriverRepositoryTrait for DriverRepository {
         Ok(drivers)
     }
 
+    async fn find_all_with_user(&self) -> Result<Vec<DriverWithUser>, AppError> {
+        let drivers = sqlx::query_as::<_, DriverWithUser>(
+            r#"
+            SELECT 
+                d.id,
+                d.user_id,
+                d.license_number,
+                d.status,
+                u.email,
+                u.name,
+                d.phone,
+                d.wage_rate,
+                d.license_expiry,
+                d.created_at,
+                d.updated_at
+            FROM drivers d
+            JOIN users u ON d.user_id = u.id
+            WHERE d.deleted_at IS NULL AND u.deleted_at IS NULL
+            "#
+        )
+        .fetch_all(&self.pool)
+        .await
+        .map_err(AppError::DatabaseError)?;
+
+        Ok(drivers)
+    }
+
     async fn find_by_id(&self, id: Uuid) -> Result<Option<Driver>, AppError> {
         let driver = sqlx::query_as::<_, Driver>(
             "SELECT * FROM drivers WHERE id = $1 AND deleted_at IS NULL"
+        )
+        .bind(id)
+        .fetch_optional(&self.pool)
+        .await
+        .map_err(AppError::DatabaseError)?;
+
+        Ok(driver)
+    }
+
+    async fn find_by_id_with_user(&self, id: Uuid) -> Result<Option<DriverWithUser>, AppError> {
+        let driver = sqlx::query_as::<_, DriverWithUser>(
+            r#"
+            SELECT 
+                d.id,
+                d.user_id,
+                d.license_number,
+                d.status,
+                u.email,
+                u.name,
+                d.phone,
+                d.wage_rate,
+                d.license_expiry,
+                d.created_at,
+                d.updated_at
+            FROM drivers d
+            JOIN users u ON d.user_id = u.id
+            WHERE d.id = $1 AND d.deleted_at IS NULL AND u.deleted_at IS NULL
+            "#
         )
         .bind(id)
         .fetch_optional(&self.pool)

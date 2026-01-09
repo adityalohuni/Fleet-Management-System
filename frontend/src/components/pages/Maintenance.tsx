@@ -93,8 +93,8 @@ export function Maintenance() {
     <div className="space-y-6">
       <div className="flex items-center justify-between border-b border-border/40 pb-6">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-foreground mb-2">Maintenance</h1>
-          <p className="text-base text-foreground-secondary">
+          <h1 className="page-header mb-2">Maintenance</h1>
+          <p className="page-subtitle">
             Monitor fleet health and schedule services
           </p>
         </div>
@@ -227,9 +227,18 @@ export function Maintenance() {
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => resolveAlert.mutate(alert.id)}
+                        disabled={resolveAlert.isPending}
+                        onClick={async () => {
+                          try {
+                            await resolveAlert.mutateAsync(alert.id);
+                            toast.success('Alert resolved successfully');
+                          } catch (error) {
+                            const errorMessage = formatApiError(error, 'Failed to resolve alert');
+                            toast.error(errorMessage);
+                          }
+                        }}
                       >
-                        Resolve
+                        {resolveAlert.isPending ? 'Resolving...' : 'Resolve'}
                       </Button>
                     </TableCell>
                   </TableRow>
@@ -285,7 +294,7 @@ export function Maintenance() {
                     <TableCell>{format(new Date(record.date), "MMM d, yyyy")}</TableCell>
                     <TableCell>{record.type}</TableCell>
                     <TableCell>{record.provider}</TableCell>
-                    <TableCell className="text-right">${record.cost.toFixed(2)}</TableCell>
+                    <TableCell className="text-right">${(parseFloat(record.cost || "0") || 0).toFixed(2)}</TableCell>
                   </TableRow>
                 ))}
                 {!selectedVehicleId && (

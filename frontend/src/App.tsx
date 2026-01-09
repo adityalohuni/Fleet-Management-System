@@ -42,7 +42,7 @@ export default function App() {
       <div className="flex h-screen bg-background">
         <Sidebar currentPage={currentPage} onNavigate={setCurrentPage} />
         <div className="flex-1 flex flex-col overflow-hidden">
-          <TopNav />
+          <TopNav onNavigate={setCurrentPage} />
           <main className="flex-1 overflow-y-auto p-6 md:p-8">
             <div className="max-w-[1920px] mx-auto">
               {renderPage()}

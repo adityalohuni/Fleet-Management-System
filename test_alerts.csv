@@ -1,0 +1,26 @@
+ID,Entity ID,Type,Severity,Is Resolved,Created At
+9489a72b-8e8f-415c-98bc-38248962bf71,525ef2d6-e4a9-48e5-9ef7-48a8bc5876d1,Brake System Alert,Low,False,2026-01-09T03:09:02.388036Z
+b83ee22a-82fe-4a08-b6ab-5d236cfea260,65eeb0bf-752e-49d9-8695-87c266d04460,License Expiry Warning,Critical,False,2026-01-09T03:09:02.391089Z
+39549589-f237-4ccf-8ca7-205233296cea,e0c7a0da-3bf9-4d9e-be68-e0c9735610d4,Overdue Inspection,Critical,False,2026-01-09T03:09:02.394446Z
+68565e5a-00f2-4950-8bc6-77a31c146ec0,2d5f3c8e-b263-4dfd-8245-ffadf22cd8cc,Tire Pressure Low,High,False,2026-01-09T03:09:02.399067Z
+6355b66f-3364-45af-8ec8-78138f6422e5,525ef2d6-e4a9-48e5-9ef7-48a8bc5876d1,Harsh Braking Event,Critical,False,2026-01-09T03:09:02.401967Z
+22ef0571-aa86-415d-97f9-adb21635b294,14453d9a-0585-4262-8268-7182ad8c0088,Overdue Inspection,Critical,False,2026-01-09T03:09:02.404865Z
+7f6133a9-3975-40e5-815a-99d2103618d0,525ef2d6-e4a9-48e5-9ef7-48a8bc5876d1,Overdue Inspection,Critical,False,2026-01-09T03:09:02.407950Z
+10c8213d-cd92-4b31-a0e8-3615b1202fb4,2f4a528e-7ae4-46eb-96b2-f8fe08eb745d,Maintenance Due,Low,False,2026-01-09T03:09:02.411034Z
+cf2895ca-a7a1-4874-ba19-fd03dcf8b3c6,f544e89d-8e15-4104-8a5a-6eb2d8cb4572,Tire Pressure Low,Medium,False,2026-01-09T03:09:02.415509Z
+d111ad39-2911-4f43-a668-8173f04545a2,4bf02764-bd3f-461c-a490-585a23205adf,Tire Pressure Low,Low,False,2026-01-09T03:09:02.418498Z
+e273f6dc-de16-4e93-8f77-3f4e2aa39101,e4f9950c-eb8d-4919-a1df-6f75af9c3928,Engine Warning,High,False,2026-01-09T03:09:02.421742Z
+5b2833d6-04c8-4854-8e02-0135df578a42,b246911b-81a7-4db1-ab69-57df11e8efca,Low Fuel Alert,Medium,False,2026-01-09T03:09:02.424696Z
+f021db5d-9ede-47b9-95d2-e1d1f22f571d,1ce84a56-1238-4e19-99af-25217094c967,Battery Warning,Low,False,2026-01-09T03:09:02.429434Z
+6fee3c83-65e7-4dd2-84f0-c69bdbf68f8f,405d588d-d91a-4217-acf6-b805ccadfdfc,License Expiry Warning,Low,False,2026-01-09T03:09:02.432174Z
+42f0f96d-30e3-47fc-8b1e-af791ce5d227,903af0b3-be21-460b-959c-43bede391d8b,Engine Warning,Critical,False,2026-01-09T03:09:02.435108Z
+b3311c40-ba5b-40f4-b7ff-587bc0ca204e,2d5f3c8e-b263-4dfd-8245-ffadf22cd8cc,Low Fuel Alert,Medium,False,2026-01-09T03:09:02.438147Z
+6ee65f2f-6319-4be4-8256-d0120c5b05d0,4f3ea4c8-c72c-49f2-929c-29fe4d0facc4,Speed Violation,Medium,False,2026-01-09T03:09:02.440879Z
+69874f17-6a71-4932-bd30-981679522241,ebf823a8-98bc-4c56-8b32-1d971250e6b8,Tire Pressure Low,High,False,2026-01-09T03:09:02.445426Z
+24c81ab0-c9ee-4433-b4e2-766af35d8d40,713ec7bf-3c8a-45dc-99c8-e9dcc5b7d73e,Maintenance Due,Low,False,2026-01-09T03:09:02.448244Z
+922ce3ef-a424-46d9-88bc-1388015b97bb,2f4a528e-7ae4-46eb-96b2-f8fe08eb745d,Harsh Braking Event,Low,False,2026-01-09T03:09:02.451319Z
+cde03aab-220f-4e90-bfee-8aabe7728363,f544e89d-8e15-4104-8a5a-6eb2d8cb4572,Brake System Alert,Medium,False,2026-01-09T03:09:02.454638Z
+b67a79b9-46ce-45c6-aaa9-d99937fa1e84,81bf6266-5c4d-4ec1-879f-4c9b6c2c42f1,Brake System Alert,Medium,False,2026-01-09T03:09:02.457818Z
+6289f00e-739e-4be7-b7d4-2dc16c03c461,72968014-33dc-4a62-b52e-24670947c089,Overdue Inspection,Medium,False,2026-01-09T03:09:02.462305Z
+1a212eaa-a8dc-4806-86c7-c65dcd83b174,f544e89d-8e15-4104-8a5a-6eb2d8cb4572,Speed Violation,Medium,False,2026-01-09T03:09:02.465079Z
+66cd92e5-0d48-44d2-927a-e7bfd33640b0,12cdc6b6-dfde-457f-91dc-470c867c21c3,License Expiry Warning,Low,False,2026-01-09T03:09:02.467884Z

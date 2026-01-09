@@ -1,20 +1,25 @@
-import { DriverService as ClientDriverService } from '../client';
+import api from './api';
 import { Driver, Assignment } from '../types';
 
 export const DriverService = {
   getAll: async (): Promise<Driver[]> => {
     try {
-      const drivers = await ClientDriverService.getDrivers();
+      const { data: drivers } = await api.get<any[]>('/drivers');
+      console.log('Fetched drivers from API:', drivers);
+      if (!Array.isArray(drivers)) {
+        console.error('Expected array from drivers endpoint, got:', typeof drivers);
+        return [];
+      }
       return drivers.map(d => ({
         id: d.id || '',
-        name: d.name || 'Unknown',
+        name: d.name || d.email || 'Unknown',
         license: d.license_number || 'N/A',
-        licenseExpiry: '2025-01-01', // Placeholder
-        availability: (d.status === 'Active' ? 'Available' : 'Off Duty') as any,
-        hoursThisWeek: 0, // Placeholder
-        wageRate: 25, // Placeholder
-        phone: '555-0123', // Placeholder
-        email: 'driver@example.com' // Placeholder
+        licenseExpiry: d.license_expiry || '2025-01-01',
+        availability: (d.status === 'Available' ? 'Available' : d.status === 'OnDuty' ? 'On Duty' : d.status === 'OffDuty' ? 'Off Duty' : 'Off Duty') as any,
+        hoursThisWeek: 0, // Placeholder - not tracked yet
+        wageRate: d.wage_rate ? parseFloat(d.wage_rate) : 25,
+        phone: d.phone || 'N/A',
+        email: d.email || 'unknown@example.com'
       }));
     } catch (error) {
       console.error('Failed to fetch drivers', error);
@@ -24,17 +29,17 @@ export const DriverService = {
 
   getById: async (id: string): Promise<Driver> => {
     try {
-      const d = await ClientDriverService.getDriverById(id);
+      const { data: d } = await api.get<any>(`/drivers/${id}`);
       return {
         id: d.id || '',
-        name: d.name || 'Unknown',
+        name: d.name || d.email || 'Unknown',
         license: d.license_number || 'N/A',
-        licenseExpiry: '2025-01-01',
-        availability: (d.status === 'Active' ? 'Available' : 'Off Duty') as any,
+        licenseExpiry: d.license_expiry || '2025-01-01',
+        availability: (d.status === 'Available' ? 'Available' : d.status === 'OnDuty' ? 'On Duty' : d.status === 'OffDuty' ? 'Off Duty' : 'Off Duty') as any,
         hoursThisWeek: 0,
-        wageRate: 25,
-        phone: '555-0123',
-        email: 'driver@example.com'
+        wageRate: d.wage_rate ? parseFloat(d.wage_rate) : 25,
+        phone: d.phone || 'N/A',
+        email: d.email || 'unknown@example.com'
       };
     } catch (error) {
       console.error('Failed to fetch driver', error);
@@ -42,11 +47,16 @@ export const DriverService = {
     }
   },
 
-  create: async (driver: Omit<Driver, 'id'>): Promise<Driver> => {
+  create: async (driver: Omit<Driver, 'id'> & { user_id?: string }): Promise<Driver> => {
     try {
-      const d = await ClientDriverService.createDriver({
-        name: driver.name,
-        status: driver.availability === 'Available' ? 'Active' : 'Inactive',
+      const userId = driver.user_id;
+      if (!userId) {
+        throw new Error('User ID is required to create a driver');
+      }
+      
+      const { data: d } = await api.post<any>('/drivers', {
+        user_id: userId,
+        status: driver.availability === 'Available' ? 'Available' : 'OffDuty',
         license_number: driver.license
       });
       return {
@@ -68,9 +78,8 @@ export const DriverService = {
 
   update: async (id: string, driver: Partial<Driver>): Promise<Driver> => {
     try {
-      const d = await ClientDriverService.updateDriver(id, {
-        name: driver.name,
-        status: driver.availability === 'Available' ? 'Active' : 'Inactive',
+      const { data: d } = await api.put<any>(`/drivers/${id}`, {
+        status: driver.availability === 'Available' ? 'Available' : 'OffDuty',
         license_number: driver.license
       });
       return {
@@ -92,7 +101,7 @@ export const DriverService = {
 
   delete: async (id: string): Promise<void> => {
     try {
-      await ClientDriverService.deleteDriver(id);
+      await api.delete(`/drivers/${id}`);
     } catch (error) {
       console.error('Failed to delete driver', error);
       throw error;
@@ -100,8 +109,25 @@ export const DriverService = {
   },
 
   getAssignmentHistory: async (id: string): Promise<Assignment[]> => {
-    // This endpoint might not exist in the generated client yet or needs to be added to openapi.json
-    // For now, return empty array or mock
-    return []; 
+    try {
+      const { data: assignments } = await api.get<any[]>(`/assignments/driver/${id}`);
+      if (!Array.isArray(assignments)) {
+        console.error('Expected array from assignment history endpoint, got:', typeof assignments);
+        return [];
+      }
+      // Map backend assignments to frontend Assignment type
+      return assignments.map((a: any) => ({
+        id: a.id || '',
+        vehicleId: a.vehicle_id || '',
+        driverId: a.driver_id || '',
+        startDate: a.start_time || new Date().toISOString(),
+        endDate: a.end_time || null,
+        status: (a.status || 'Active') as any,
+        notes: '',
+      }));
+    } catch (error) {
+      console.error('Failed to fetch driver assignment history', error);
+      return [];
+    }
   },
 };

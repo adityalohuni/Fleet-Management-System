@@ -37,7 +37,7 @@ import { toast, formatApiError } from "../../lib/toast";
 export function Assignments() {
   const { data: assignments, isLoading } = useAssignments();
   const { data: vehicles } = useVehicles();
-  const { data: drivers } = useDrivers();
+  const { data: drivers, isLoading: isLoadingDrivers, isError: isDriversError } = useDrivers();
   const createAssignment = useCreateAssignment();
   const updateStatus = useUpdateAssignmentStatus();
 
@@ -106,8 +106,8 @@ export function Assignments() {
     <div className="space-y-6">
       <div className="flex items-center justify-between border-b border-border/40 pb-6">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-foreground mb-2">Assignments</h1>
-          <p className="text-base text-foreground-secondary">
+          <h1 className="page-header mb-2">Assignments</h1>
+          <p className="page-subtitle">
             Manage vehicle assignments and driver schedules
           </p>
         </div>
@@ -150,18 +150,38 @@ export function Assignments() {
                   onValueChange={(value) =>
                     setNewAssignment({ ...newAssignment, driverId: value })
                   }
+                  disabled={isLoadingDrivers || isDriversError}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Select driver" />
+                    <SelectValue placeholder={
+                      isLoadingDrivers ? "Loading drivers..." : 
+                      isDriversError ? "Failed to load drivers" :
+                      "Select driver"
+                    } />
                   </SelectTrigger>
                   <SelectContent>
-                    {drivers?.filter(d => d.availability === 'Available').map((driver) => (
-                      <SelectItem key={driver.id} value={driver.id}>
-                        {driver.name}
+                    {isDriversError ? (
+                      <SelectItem value="error" disabled>
+                        Error loading drivers. Please refresh the page.
                       </SelectItem>
-                    ))}
+                    ) : drivers && drivers.length > 0 ? (
+                      drivers.map((driver) => (
+                        <SelectItem key={driver.id} value={driver.id}>
+                          {driver.name} ({driver.availability})
+                        </SelectItem>
+                      ))
+                    ) : (
+                      <SelectItem value="no-drivers" disabled>
+                        No drivers found. Please add drivers first.
+                      </SelectItem>
+                    )}
                   </SelectContent>
                 </Select>
+                {isDriversError && (
+                  <p className="text-sm text-destructive">
+                    Failed to load drivers. Check console for details.
+                  </p>
+                )}
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
@@ -276,22 +296,36 @@ export function Assignments() {
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() =>
-                          updateStatus.mutate({ id: assignment.id, status: "Active" })
-                        }
+                        disabled={updateStatus.isPending}
+                        onClick={async () => {
+                          try {
+                            await updateStatus.mutateAsync({ id: assignment.id, status: "Active" });
+                            toast.success('Assignment started');
+                          } catch (error) {
+                            const errorMessage = formatApiError(error, 'Failed to start assignment');
+                            toast.error(errorMessage);
+                          }
+                        }}
                       >
-                        Start
+                        {updateStatus.isPending ? 'Starting...' : 'Start'}
                       </Button>
                     )}
                     {assignment.status === "Active" && (
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() =>
-                          updateStatus.mutate({ id: assignment.id, status: "Completed" })
-                        }
+                        disabled={updateStatus.isPending}
+                        onClick={async () => {
+                          try {
+                            await updateStatus.mutateAsync({ id: assignment.id, status: "Completed" });
+                            toast.success('Assignment completed');
+                          } catch (error) {
+                            const errorMessage = formatApiError(error, 'Failed to complete assignment');
+                            toast.error(errorMessage);
+                          }
+                        }}
                       >
-                        Complete
+                        {updateStatus.isPending ? 'Completing...' : 'Complete'}
                       </Button>
                     )}
                   </TableCell>

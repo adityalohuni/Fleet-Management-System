@@ -18,7 +18,7 @@ use fleet_management_backend::repositories::postgres::settings_repo::SettingsRep
 use fleet_management_backend::services::auth_service::{AuthService, AuthServiceTrait};
 use fleet_management_backend::services::settings_service::{SettingsService, SettingsServiceTrait};
 use fleet_management_backend::services::user_service::{UserService, UserServiceTrait};
-use fleet_management_backend::middleware::auth_middleware::Auth;
+use fleet_management_backend::middleware::auth_middleware::{self, Auth};
 use fleet_management_backend::api_docs::ApiDoc;
 use actix_web::{web, App, HttpServer, HttpResponse, Responder};
 use actix_cors::Cors;
@@ -27,6 +27,9 @@ use env_logger;
 use std::sync::Arc;
 use utoipa::OpenApi;
 use utoipa_swagger_ui::SwaggerUi;
+use uuid::Uuid;
+use moka::future::Cache;
+use std::time::Duration;
 
 async fn health_check() -> impl Responder {
     HttpResponse::Ok().body("Fleet Management Backend is running!")
@@ -45,6 +48,13 @@ async fn main() -> std::io::Result<()> {
         .run(&pool)
         .await
         .expect("Failed to run migrations");
+
+    // Initialize user active status cache with 5-minute TTL
+    let user_active_cache: Arc<Cache<Uuid, auth_middleware::UserActiveCache>> = Arc::new(
+        Cache::builder()
+            .time_to_live(Duration::from_secs(300))
+            .build()
+    );
 
     println!("Server running at http://{}", config.server_address);
 
@@ -129,6 +139,7 @@ async fn main() -> std::io::Result<()> {
         App::new()
             .wrap(cors)
             .app_data(web::Data::new(pool.clone()))
+            .app_data(web::Data::from(user_active_cache.clone()))
             .app_data(vehicle_service_data)
             .app_data(driver_service_data)
             .app_data(assignment_service_data)
@@ -156,7 +167,11 @@ async fn main() -> std::io::Result<()> {
                     .configure(routes::auth::config_public)
                     .service(
                         web::scope("")
-                            .wrap(Auth { jwt_secret: config.jwt_secret.clone() })
+                            .wrap(Auth {
+                                jwt_secret: config.jwt_secret.clone(),
+                                pool: pool.clone(),
+                                cache: user_active_cache.clone(),
+                            })
                             .configure(routes::auth::config_protected)
                             .configure(routes::settings::config)
                             .configure(routes::users::config)

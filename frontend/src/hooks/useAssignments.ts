@@ -10,6 +10,14 @@ export const useAssignments = () => {
   });
 };
 
+export const useAssignmentsByVehicle = (vehicleId: string) => {
+  return useQuery({
+    queryKey: [QUERY_KEYS.ASSIGNMENTS, vehicleId],
+    queryFn: () => AssignmentService.getByVehicleId(vehicleId),
+    enabled: !!vehicleId,
+  });
+};
+
 export const useCreateAssignment = () => {
   const queryClient = useQueryClient();
   return useMutation({

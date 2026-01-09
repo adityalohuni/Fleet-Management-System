@@ -1,5 +1,5 @@
 use uuid::Uuid;
-use crate::models::postgres::driver::{Driver, CreateDriverDto, DriverStatus};
+use crate::models::postgres::driver::{Driver, DriverWithUser, CreateDriverDto, DriverStatus};
 use crate::repositories::postgres::driver_repo::DriverRepositoryTrait;
 use crate::error::AppError;
 
@@ -7,8 +7,8 @@ use crate::error::AppError;
 #[async_trait::async_trait]
 pub trait DriverServiceTrait: Send + Sync {
     async fn create_driver(&self, dto: CreateDriverDto) -> Result<Driver, AppError>;
-    async fn get_driver(&self, id: Uuid) -> Result<Driver, AppError>;
-    async fn list_drivers(&self) -> Result<Vec<Driver>, AppError>;
+    async fn get_driver(&self, id: Uuid) -> Result<DriverWithUser, AppError>;
+    async fn list_drivers(&self) -> Result<Vec<DriverWithUser>, AppError>;
     async fn update_driver_status(&self, id: Uuid, status: DriverStatus) -> Result<Driver, AppError>;
     async fn delete_driver(&self, id: Uuid) -> Result<(), AppError>;
 }
@@ -29,16 +29,16 @@ impl DriverServiceTrait for DriverService {
         self.driver_repo.create(dto).await
     }
 
-    async fn get_driver(&self, id: Uuid) -> Result<Driver, AppError> {
-        let driver = self.driver_repo.find_by_id(id).await?;
+    async fn get_driver(&self, id: Uuid) -> Result<DriverWithUser, AppError> {
+        let driver = self.driver_repo.find_by_id_with_user(id).await?;
         match driver {
             Some(d) => Ok(d),
             None => Err(AppError::NotFound(format!("Driver with id {} not found", id))),
         }
     }
 
-    async fn list_drivers(&self) -> Result<Vec<Driver>, AppError> {
-        self.driver_repo.find_all().await
+    async fn list_drivers(&self) -> Result<Vec<DriverWithUser>, AppError> {
+        self.driver_repo.find_all_with_user().await
     }
 
     async fn update_driver_status(&self, id: Uuid, status: DriverStatus) -> Result<Driver, AppError> {

@@ -1,0 +1,71 @@
+ID,Job ID,Weight,Dimensions,Type
+45368715-8ef1-48e7-822e-315ce5353014,52e68c43-ba11-43cf-b948-875d6593ae38,2253.75,"{""length"": 7.61, ""width"": 2.64, ""height"": 1.02}",Electronics
+8980ca31-613a-4249-99bc-180f969a8218,1b717f8f-d30e-45aa-abfb-cde6e82a10b1,3001.32,"{""length"": 2.58, ""width"": 4.25, ""height"": 1.49}",Food & Beverage
+e49c8505-543e-432a-8b43-dd948a472e2d,152e0a35-5d83-4200-ba2b-66a7fe39b907,3642.02,"{""length"": 9.05, ""width"": 2.35, ""height"": 3.09}",Consumer Goods
+52d1dffe-5e6b-4205-92e1-8b70fb7996b1,83ccb893-3e3d-496c-bc75-56af88f0e7ba,637.28,"{""length"": 2.33, ""width"": 1.75, ""height"": 4.0}",Machinery
+77dff8e4-dc5a-494d-bf0c-ab7cf4b51d66,2d0ddc16-baa2-4daa-b67e-a30c3265d529,2343.33,"{""length"": 4.21, ""width"": 4.33, ""height"": 4.43}",Raw Materials
+57efeb3e-d460-4bcd-bca4-491357b30fb7,3c7b2147-3787-477c-8f3d-052355a478b5,4489.86,"{""length"": 8.43, ""width"": 3.54, ""height"": 1.46}",Machinery
+fe72e3fd-7216-4203-95f1-d2f5b9ae234b,caeb7ed8-2e13-4d09-ad24-a140d7461214,1395.6,"{""length"": 6.19, ""width"": 4.12, ""height"": 1.69}",Automotive Parts
+562d9ca5-168b-4954-8bc3-6e31a55e0d5d,2576c73e-60bd-4b71-8113-b0e812e838df,2471.73,"{""length"": 7.16, ""width"": 4.81, ""height"": 1.46}",Textiles
+c5b7c993-17e5-41a8-941c-c634ad7b1508,a47388f9-e199-4482-b4cb-e07193ea8b7d,835.19,"{""length"": 2.36, ""width"": 3.29, ""height"": 4.95}",Pharmaceuticals
+cca36235-2714-4630-9d7e-65909c23d7d5,b140932b-b462-45bc-bfe1-69a4ba6c3809,4378.08,"{""length"": 3.42, ""width"": 3.91, ""height"": 2.9}",Pharmaceuticals
+e5987970-bae1-40b3-b566-32048c9c8687,e237a9f8-c56a-4a3b-8517-46dc38ac4ec3,1942.17,"{""length"": 8.7, ""width"": 4.1, ""height"": 1.16}",Consumer Goods
+634aee77-5db4-4516-9ef3-4f36fb830467,c6da6c8d-82f3-494c-8bc7-18de10937ad0,139.92,"{""length"": 2.63, ""width"": 3.25, ""height"": 3.01}",Electronics
+b50fd7f2-0518-41c8-b1ba-effd280ad68d,3281357e-a436-4da5-8768-f716689492d6,4649.61,"{""length"": 4.85, ""width"": 1.18, ""height"": 4.62}",Electronics
+883ebd64-bd76-463c-b463-c8a458476081,3f5ce3e8-3b22-4e36-a618-9c5294990e49,1761.32,"{""length"": 8.44, ""width"": 4.8, ""height"": 2.72}",Pharmaceuticals
+be207244-7cf5-46f0-b12e-240914cd3629,caeb7ed8-2e13-4d09-ad24-a140d7461214,1916.19,"{""length"": 7.48, ""width"": 3.57, ""height"": 1.09}",Food & Beverage
+e1c329e5-b4cf-413b-90d3-01d9291f0dcb,a47388f9-e199-4482-b4cb-e07193ea8b7d,805.86,"{""length"": 6.51, ""width"": 4.77, ""height"": 2.11}",Textiles
+6d767929-de27-42eb-b84c-f8141fc83f76,3281357e-a436-4da5-8768-f716689492d6,4745.96,"{""length"": 4.07, ""width"": 3.03, ""height"": 3.32}",Construction Materials
+06d29020-1e84-4fe9-bfa3-dc0a16a7faf6,1b717f8f-d30e-45aa-abfb-cde6e82a10b1,3360.09,"{""length"": 2.66, ""width"": 4.78, ""height"": 2.76}",Consumer Goods
+8125ae36-54f0-44c8-8f27-fe02f2f51088,3281357e-a436-4da5-8768-f716689492d6,3536.75,"{""length"": 7.93, ""width"": 2.55, ""height"": 2.3}",Palletized Freight
+6a8dd744-fe3a-46e7-a283-7b3b9367201e,5f837bf6-0046-4fd1-ab24-b05f44a9c3b6,164.03,"{""length"": 8.93, ""width"": 3.61, ""height"": 4.75}",Pharmaceuticals
+42b53815-6dd9-4742-b0d2-e80e48a24e8c,fff5f64e-ed6d-4bd6-bbee-9f882477670d,4572.09,"{""length"": 5.71, ""width"": 4.73, ""height"": 2.68}",Automotive Parts
+42094d00-a292-48cb-9ed0-c500c03f7b35,fff5f64e-ed6d-4bd6-bbee-9f882477670d,1598.84,"{""length"": 6.42, ""width"": 4.69, ""height"": 3.08}",Raw Materials
+2e9d4877-a831-4790-b2e9-e79c853befe2,1b717f8f-d30e-45aa-abfb-cde6e82a10b1,4327.22,"{""length"": 7.38, ""width"": 4.42, ""height"": 2.47}",Electronics
+78267873-6e6d-4321-a413-517d4b771de9,3f5ce3e8-3b22-4e36-a618-9c5294990e49,3059.42,"{""length"": 1.36, ""width"": 2.95, ""height"": 4.92}",Construction Materials
+452bcdc4-3d80-468a-ac0b-796640220a19,b140932b-b462-45bc-bfe1-69a4ba6c3809,3756.47,"{""length"": 8.72, ""width"": 3.5, ""height"": 4.06}",Palletized Freight
+ea847bc3-db09-41d6-872d-02226ad51bb1,610f76a2-4fff-4570-b01a-b08086478d54,4718.84,"{""length"": 3.1, ""width"": 1.29, ""height"": 4.43}",Palletized Freight
+832d06a0-2237-4266-a71e-c947411304fb,5bdfb6d9-6862-4748-ad9e-ade6fdd7aa72,3063.75,"{""length"": 5.8, ""width"": 1.66, ""height"": 1.6}",Machinery
+a17958d4-3b12-4a0e-b4d5-7752f1024d2c,e29c0bd1-2c73-42c7-a5d2-d238e781d6f7,2813.23,"{""length"": 4.82, ""width"": 4.64, ""height"": 3.33}",Raw Materials
+aca9d200-849c-4b3b-97b7-d98d6918a940,3b650743-7324-4159-ad26-7281a69d941e,4679.93,"{""length"": 6.73, ""width"": 1.65, ""height"": 3.38}",Construction Materials
+22e4a991-b551-42bd-9cf6-6e14b64c7dab,5bdfb6d9-6862-4748-ad9e-ade6fdd7aa72,3798.87,"{""length"": 6.14, ""width"": 1.09, ""height"": 4.06}",Electronics
+0b5cbc8a-9ee2-4eea-adc0-57577b0e0e48,784af82e-b5f2-4ac7-98f0-35761a68eace,4577.77,"{""length"": 3.49, ""width"": 4.49, ""height"": 2.12}",Pharmaceuticals
+ad5b7050-8899-408c-903f-ffc02c503384,fe4fc185-6ad6-403b-b407-c5c80831c9fb,1214.38,"{""length"": 9.06, ""width"": 3.93, ""height"": 2.25}",Machinery
+2db11a83-5a8a-4890-b983-9df451a54516,9ad54a3a-1996-44b1-969c-c0ac14a7dceb,1694.66,"{""length"": 3.09, ""width"": 1.36, ""height"": 2.69}",Palletized Freight
+417b0809-d96d-48ea-bcd1-4f831e46f057,1b717f8f-d30e-45aa-abfb-cde6e82a10b1,4125.63,"{""length"": 5.32, ""width"": 3.5, ""height"": 4.37}",Pharmaceuticals
+e9a6dcd3-bea3-45e8-8268-f0e27aa345ff,cb357cca-3448-4934-b9f1-7b6fe0a5dbba,1159.37,"{""length"": 3.1, ""width"": 2.73, ""height"": 1.95}",Electronics
+d74c7f48-b0c3-4ed0-94a3-b3d717d3944d,784af82e-b5f2-4ac7-98f0-35761a68eace,3389.51,"{""length"": 6.48, ""width"": 3.16, ""height"": 2.97}",Machinery
+e29d1975-95a2-4a89-a6d0-9a2a32da8188,2a2744f3-04a7-4320-a244-de04d4200276,1116.51,"{""length"": 9.83, ""width"": 4.17, ""height"": 2.38}",Construction Materials
+d594f133-5cee-452c-8894-de9b84345e35,714463f5-3b84-41da-96e6-6d74d03723fc,4324.11,"{""length"": 2.49, ""width"": 3.97, ""height"": 3.27}",Construction Materials
+1b0b8bff-2e51-4ff3-938a-45646725ea47,2d0ddc16-baa2-4daa-b67e-a30c3265d529,1572.47,"{""length"": 3.66, ""width"": 4.49, ""height"": 1.68}",Raw Materials
+9fa90963-3657-439b-b5c0-39e77b976108,caeb7ed8-2e13-4d09-ad24-a140d7461214,2259.59,"{""length"": 3.67, ""width"": 1.67, ""height"": 3.8}",Textiles
+f74defbe-1e46-44f9-8269-028e3642c61d,784af82e-b5f2-4ac7-98f0-35761a68eace,1081.96,"{""length"": 1.87, ""width"": 3.45, ""height"": 3.52}",Construction Materials
+b443b5b3-8239-42cd-b995-8c2b130e3ada,562bbcae-8428-492b-ae17-1230d38d1d21,1604.19,"{""length"": 9.99, ""width"": 2.48, ""height"": 3.97}",Food & Beverage
+01e946b6-7b1a-46c2-8752-5cbb43b19bbe,24e3fd18-2977-4aed-9883-2ecf2617e906,4089.54,"{""length"": 1.24, ""width"": 4.39, ""height"": 2.35}",Food & Beverage
+db62a21c-d91f-41b9-9a68-d838df67302e,3b650743-7324-4159-ad26-7281a69d941e,4600.6,"{""length"": 6.72, ""width"": 3.63, ""height"": 2.03}",Food & Beverage
+21b0a097-21c5-4aba-9f00-60b3fc43aeb3,d336131c-78c9-43d7-8974-0749765f3182,3681.78,"{""length"": 6.99, ""width"": 3.8, ""height"": 3.94}",Construction Materials
+d2281b70-bb49-45e4-8a53-41afea7bf2b4,dca18468-fbaa-449d-bdef-61ae6857c002,3631.12,"{""length"": 1.64, ""width"": 3.1, ""height"": 1.12}",Raw Materials
+0a573806-461b-40b3-af83-eb9e9997cab8,bc106a6e-01d6-428a-b2df-0a496d4878a8,2190.82,"{""length"": 8.32, ""width"": 4.92, ""height"": 4.07}",Construction Materials
+abe6ccc0-3239-43c0-b1ad-313558baaa57,714463f5-3b84-41da-96e6-6d74d03723fc,1472.02,"{""length"": 4.98, ""width"": 1.49, ""height"": 1.91}",Machinery
+b4a501bf-42ce-497a-9200-6621b4a3bf67,562bbcae-8428-492b-ae17-1230d38d1d21,3335.94,"{""length"": 5.31, ""width"": 3.31, ""height"": 4.64}",Electronics
+9fdaf6bf-092a-4e01-bbd8-5b2f07b89c81,b9013658-c642-4ce6-b2ea-30d1a380aad5,1595.94,"{""length"": 9.65, ""width"": 3.96, ""height"": 1.15}",Electronics
+f1e32a49-d223-467c-9575-a92b785a3bcc,c6da6c8d-82f3-494c-8bc7-18de10937ad0,2721.57,"{""length"": 5.16, ""width"": 4.23, ""height"": 2.02}",Pharmaceuticals
+8fa96a8f-4064-4c95-bafc-321cdd8bcd03,5f837bf6-0046-4fd1-ab24-b05f44a9c3b6,1361.93,"{""length"": 7.4, ""width"": 2.8, ""height"": 4.96}",Consumer Goods
+b53f2dc2-29ab-40fe-a761-d7ef363c5bed,610f76a2-4fff-4570-b01a-b08086478d54,2510.35,"{""length"": 6.07, ""width"": 1.29, ""height"": 3.7}",Food & Beverage
+5e6d6873-e6da-4cb1-8bc1-04080a116143,327a6498-b03e-47b9-8ee7-800133e3eb0d,3281.39,"{""length"": 2.15, ""width"": 4.91, ""height"": 3.53}",Textiles
+90ac1a90-54d2-40fe-ab32-89e3e00a1f15,3b650743-7324-4159-ad26-7281a69d941e,116.07,"{""length"": 1.76, ""width"": 4.5, ""height"": 2.55}",Construction Materials
+82f1f594-80ec-4778-a64f-67ee8a47b5c7,1b717f8f-d30e-45aa-abfb-cde6e82a10b1,4772.05,"{""length"": 7.02, ""width"": 3.96, ""height"": 3.73}",Automotive Parts
+3efc86ed-f167-4ab6-9f6a-877642ce8596,a47388f9-e199-4482-b4cb-e07193ea8b7d,3901.89,"{""length"": 9.5, ""width"": 2.28, ""height"": 3.08}",Food & Beverage
+60ac7944-d06c-4823-8eb7-2a388ba49751,152e0a35-5d83-4200-ba2b-66a7fe39b907,1431.24,"{""length"": 9.27, ""width"": 3.29, ""height"": 1.77}",Automotive Parts
+8762c020-849a-4161-93eb-83574fb42758,be4f5c62-b994-49f8-85a1-58d93dbcdc50,4788.99,"{""length"": 5.16, ""width"": 3.72, ""height"": 1.02}",Palletized Freight
+988c6c54-9405-4569-b8f8-938241bfec3d,22e3501d-0b35-455c-84cb-dedce828dc52,1309.04,"{""length"": 4.52, ""width"": 4.18, ""height"": 1.28}",Automotive Parts
+936c5f8b-e762-4d84-9692-49f59ac11bf5,fe4fc185-6ad6-403b-b407-c5c80831c9fb,4748.27,"{""length"": 7.26, ""width"": 2.71, ""height"": 2.67}",Food & Beverage
+4730cfb8-ed25-4cbf-99d6-52315e9dd956,a47388f9-e199-4482-b4cb-e07193ea8b7d,2287.18,"{""length"": 9.27, ""width"": 1.68, ""height"": 1.42}",Machinery
+84fa0965-f7fe-4113-b1e8-a7b2fdfa5129,327a6498-b03e-47b9-8ee7-800133e3eb0d,1885.31,"{""length"": 5.04, ""width"": 3.8, ""height"": 3.52}",Automotive Parts
+755ed22f-3018-457e-9cb4-452f2db46a1d,dca18468-fbaa-449d-bdef-61ae6857c002,4398.04,"{""length"": 4.1, ""width"": 1.64, ""height"": 2.27}",Consumer Goods
+9c3867b9-9cd6-484d-baa2-c4c519f52c9d,be4f5c62-b994-49f8-85a1-58d93dbcdc50,2722.45,"{""length"": 6.14, ""width"": 4.66, ""height"": 3.21}",Palletized Freight
+e98d34f1-1283-4acd-bfff-41e7cc58222a,1c909bb6-8517-4dfd-bdec-8d0da465a23e,2176.57,"{""length"": 7.76, ""width"": 2.61, ""height"": 2.37}",Machinery
+ebacc3c2-78a2-40bb-b92a-ee7ab0938ad6,8e228063-2e8a-43b9-9915-21d35b0d8e2d,3115.13,"{""length"": 9.48, ""width"": 2.82, ""height"": 3.96}",Textiles
+5e58d0d9-7b7b-4b1d-9ff5-667f9f289f70,2576c73e-60bd-4b71-8113-b0e812e838df,3942.47,"{""length"": 5.92, ""width"": 2.1, ""height"": 4.29}",Palletized Freight
+e5e42205-39e6-47b4-8710-79849ea7f9c3,c6a6937c-22ab-4e7e-876b-7e05818b7279,2355.17,"{""length"": 9.21, ""width"": 1.09, ""height"": 2.31}",Raw Materials
+8fc10215-bda0-4fd4-b360-9c242663bab7,a47388f9-e199-4482-b4cb-e07193ea8b7d,2439.95,"{""length"": 4.6, ""width"": 3.45, ""height"": 2.43}",Construction Materials

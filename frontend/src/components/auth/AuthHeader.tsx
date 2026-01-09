@@ -5,7 +5,7 @@ interface AuthHeaderProps {
   isLogin: boolean;
 }
 
-export function AuthHeader({ isLogin }: AuthHeaderProps) {
+export function AuthHeader({ isLogin = true }: AuthHeaderProps) {
   return (
     <CardHeader className="space-y-10 pb-8 pt-14 px-12">
       <AuthLogo />

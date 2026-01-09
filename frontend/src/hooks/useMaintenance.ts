@@ -6,6 +6,17 @@ export function useAlerts() {
   return useQuery({
     queryKey: ['alerts'],
     queryFn: MaintenanceService.getAlerts,
+    refetchInterval: 30000, // Refetch every 30 seconds for real-time updates
+  });
+}
+
+export function useCreateAlert() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: MaintenanceService.createAlert,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['alerts'] });
+    },
   });
 }
 

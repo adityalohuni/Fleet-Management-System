@@ -119,7 +119,6 @@ describe('Login Page', () => {
     });
 
     it('submits registration form', async () => {
-    it('submits registration form', async () => {
       render(<Login />);
       const user = userEvent.setup();
 
@@ -136,13 +135,13 @@ describe('Login Page', () => {
 
       await user.click(screen.getByRole('button', { name: /create account/i }));
 
-      expect(mockRegister).toHaveBeenCalledWith({
+      expect(mockRegister).toHaveBeenCalledWith(expect.objectContaining({
         email: 'new@example.com',
         password: 'password123',
         role: 'Driver',
-      });
+      }));
     });
-    it('shows loading state during submission', () => {
+
     it('shows loading state during submission', () => {
       // Override mock for this specific test
       vi.spyOn(AuthContextModule, 'useAuth').mockReturnValue({
@@ -159,6 +158,7 @@ describe('Login Page', () => {
       expect(submitButton).toBeInTheDocument();
       expect(submitButton).toBeDisabled();
     });
+  });
 
   describe('Integration Tests (with AuthProvider)', () => {
     beforeEach(() => {

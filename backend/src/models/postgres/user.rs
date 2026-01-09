@@ -21,6 +21,7 @@ pub struct User {
     #[serde(skip_serializing)]
     pub password_hash: String,
     pub role: UserRole,
+    pub name: Option<String>,
     pub is_active: bool,
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,
@@ -36,6 +37,7 @@ pub struct Role {
 
 #[derive(Debug, Serialize, Deserialize, ToSchema)]
 pub struct CreateUserDto {
+        pub name: Option<String>,
     pub email: String,
     pub password_hash: String,
     pub role: UserRole,

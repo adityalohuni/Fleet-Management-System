@@ -2,16 +2,10 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+import type { DriverStatus } from './DriverStatus';
 export type CreateDriverDto = {
-    name: string;
-    status: CreateDriverDto.status;
     license_number: string;
+    status: DriverStatus;
+    user_id: string;
 };
-export namespace CreateDriverDto {
-    export enum status {
-        ACTIVE = 'Active',
-        INACTIVE = 'Inactive',
-        ON_LEAVE = 'OnLeave',
-    }
-}
 

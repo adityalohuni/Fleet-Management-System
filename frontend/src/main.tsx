@@ -6,8 +6,11 @@ import App from "./App.tsx";
 import { queryClient } from './lib/query-client';
 import { OpenAPI } from './client';
 import { AuthProvider } from "./contexts/AuthContext";
+import { ThemeStyleProvider } from "./contexts/ThemeStyleContext";
 import { Toaster } from "./components/ui/sonner";
 import "./index.css";
+import "./styles/typography.css";
+import "./styles/utilitarian.css";
 
 // Configure API Client
 OpenAPI.BASE = ''; // Paths in openapi.json already include /api
@@ -17,10 +20,12 @@ OpenAPI.TOKEN = async () => {
 
 createRoot(document.getElementById("root")!).render(
   <QueryClientProvider client={queryClient}>
-    <AuthProvider>
-      <App />
-      <Toaster />
-    </AuthProvider>
+    <ThemeStyleProvider>
+      <AuthProvider>
+        <App />
+        <Toaster />
+      </AuthProvider>
+    </ThemeStyleProvider>
     <ReactQueryDevtools initialIsOpen={false} />
   </QueryClientProvider>
 );  

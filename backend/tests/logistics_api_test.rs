@@ -24,6 +24,7 @@ mock! {
         async fn list_customers(&self) -> Result<Vec<Customer>, AppError>;
         async fn delete_customer(&self, id: Uuid) -> Result<(), AppError>;
         async fn create_job(&self, dto: CreateTransportJobDto) -> Result<TransportJob, AppError>;
+        async fn list_jobs(&self) -> Result<Vec<TransportJob>, AppError>;
         async fn get_job(&self, id: Uuid) -> Result<TransportJob, AppError>;
         async fn update_job_status(&self, id: Uuid, status: JobStatus) -> Result<TransportJob, AppError>;
         async fn create_route(&self, dto: CreateRouteDto) -> Result<Route, AppError>;

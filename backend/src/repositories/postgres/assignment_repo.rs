@@ -10,6 +10,7 @@ pub trait AssignmentRepositoryTrait: Send + Sync {
     async fn create(&self, dto: CreateAssignmentDto) -> Result<VehicleAssignment, AppError>;
     async fn find_all(&self) -> Result<Vec<VehicleAssignment>, AppError>;
     async fn find_by_id(&self, id: Uuid) -> Result<Option<VehicleAssignment>, AppError>;
+    async fn find_by_driver_id(&self, driver_id: Uuid) -> Result<Vec<VehicleAssignment>, AppError>;
     async fn update_status(&self, id: Uuid, status: AssignmentStatus) -> Result<VehicleAssignment, AppError>;
 }
 
@@ -70,6 +71,18 @@ impl AssignmentRepositoryTrait for AssignmentRepository {
         .map_err(AppError::DatabaseError)?;
 
         Ok(assignment)
+    }
+
+    async fn find_by_driver_id(&self, driver_id: Uuid) -> Result<Vec<VehicleAssignment>, AppError> {
+        let assignments = sqlx::query_as::<_, VehicleAssignment>(
+            "SELECT * FROM vehicle_assignments WHERE driver_id = $1 ORDER BY start_time DESC"
+        )
+        .bind(driver_id)
+        .fetch_all(&self.pool)
+        .await
+        .map_err(AppError::DatabaseError)?;
+
+        Ok(assignments)
     }
 
     async fn update_status(&self, id: Uuid, status: AssignmentStatus) -> Result<VehicleAssignment, AppError> {

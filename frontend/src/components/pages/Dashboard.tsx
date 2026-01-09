@@ -6,6 +6,7 @@ import {
   Line,
   BarChart,
   Bar,
+  Cell,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -29,12 +30,23 @@ import {
 } from "../../hooks/useDashboard";
 import { Skeleton } from "../ui/skeleton";
 import { useMonthlySummary, useVehicleProfitability } from "../../hooks/useFinancial";
+import { useEffect, useState } from "react";
 
 export function Dashboard() {
-  const { data: metrics, isLoading: isLoadingMetrics } = useDashboardMetrics();
-  const { data: utilizationData, isLoading: isLoadingUtilization } = useDashboardUtilization();
-  const { data: recentAssignments, isLoading: isLoadingAssignments } = useDashboardRecentAssignments();
-  const { data: alerts, isLoading: isLoadingAlerts } = useDashboardAlerts();
+  const [autoRefresh, setAutoRefresh] = useState(false);
+  
+  // Load auto-refresh preference from localStorage
+  useEffect(() => {
+    const savedPreference = localStorage.getItem('dashboardAutoRefresh');
+    if (savedPreference === 'true') {
+      setAutoRefresh(true);
+    }
+  }, []);
+  
+  const { data: metrics, isLoading: isLoadingMetrics } = useDashboardMetrics(autoRefresh);
+  const { data: utilizationData, isLoading: isLoadingUtilization } = useDashboardUtilization(autoRefresh);
+  const { data: recentAssignments, isLoading: isLoadingAssignments } = useDashboardRecentAssignments(autoRefresh);
+  const { data: alerts, isLoading: isLoadingAlerts } = useDashboardAlerts(autoRefresh);
   const { data: monthlySummary, isLoading: isLoadingMonthlySummary } = useMonthlySummary();
   const { data: vehicleProfitability, isLoading: isLoadingVehicleProfitability } = useVehicleProfitability();
 
@@ -64,8 +76,8 @@ export function Dashboard() {
     <div className="space-y-8 pb-8">
       <div className="flex items-center justify-between border-b border-border/40 pb-6">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-foreground mb-2">Dashboard</h1>
-          <p className="text-base text-foreground-secondary">{currentDate}</p>
+          <h1 className="page-header mb-2">Dashboard</h1>
+          <p className="page-subtitle">{currentDate}</p>
         </div>
       </div>
 
@@ -73,14 +85,14 @@ export function Dashboard() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <Card className="border-border/50 shadow-sm hover:shadow-md transition-all duration-300 bg-card/50">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-foreground-tertiary uppercase tracking-wide">Total Vehicles</CardTitle>
+            <CardTitle className="stat-label">Total Vehicles</CardTitle>
             <Truck className="w-5 h-5 text-primary opacity-80" />
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-foreground tracking-tight">
-              {isLoading ? <Skeleton className="h-8 w-16" /> : metrics?.totalVehicles}
+            <div className="stat-value">
+              {isLoadingMetrics ? <Skeleton className="h-8 w-16" /> : metrics?.totalVehicles ?? 0}
             </div>
-            <div className="text-sm text-foreground-tertiary mt-1 font-medium">
+            <div className="stat-description mt-1">
               {isLoading ? <Skeleton className="h-4 w-24" /> : `${metrics?.availableVehicles} available now`}
             </div>
           </CardContent>
@@ -88,14 +100,14 @@ export function Dashboard() {
 
         <Card className="border-border/50 shadow-sm hover:shadow-md transition-all duration-300 bg-card/50">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-foreground-tertiary uppercase tracking-wide">Active Drivers</CardTitle>
+            <CardTitle className="stat-label">Active Drivers</CardTitle>
             <Users className="w-5 h-5 text-chart-2 opacity-80" />
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-foreground tracking-tight">
-              {isLoading ? <Skeleton className="h-8 w-16" /> : metrics?.activeDrivers}
+            <div className="stat-value">
+              {isLoadingMetrics ? <Skeleton className="h-8 w-16" /> : metrics?.activeDrivers ?? 0}
             </div>
-            <div className="text-sm text-foreground-tertiary mt-1 font-medium">
+            <div className="stat-description mt-1">
               {isLoading ? <Skeleton className="h-4 w-24" /> : `${metrics?.driversOnDuty} on duty`}
             </div>
           </CardContent>
@@ -103,16 +115,16 @@ export function Dashboard() {
 
         <Card className="border-border/50 shadow-sm hover:shadow-md transition-all duration-300 bg-card/50">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-foreground-tertiary uppercase tracking-wide">Services in Progress</CardTitle>
+            <CardTitle className="stat-label">Services in Progress</CardTitle>
             <div className="w-5 h-5 rounded-full bg-chart-3/20 flex items-center justify-center">
               <div className="w-2.5 h-2.5 bg-chart-3 rounded-full" />
             </div>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-foreground tracking-tight">
+            <div className="stat-value">
               {isLoading ? <Skeleton className="h-8 w-16" /> : metrics?.servicesInProgress}
             </div>
-            <div className="text-sm text-foreground-tertiary mt-1 font-medium">
+            <div className="stat-description mt-1">
               {isLoading ? <Skeleton className="h-4 w-24" /> : `${metrics?.servicesCompletedToday} completed today`}
             </div>
           </CardContent>
@@ -120,14 +132,14 @@ export function Dashboard() {
 
         <Card className="border-border/50 shadow-sm hover:shadow-md transition-all duration-300 bg-card/50">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-foreground-tertiary uppercase tracking-wide">Upcoming Maintenance</CardTitle>
+            <CardTitle className="stat-label">Upcoming Maintenance</CardTitle>
             <Wrench className="w-5 h-5 text-chart-4 opacity-80" />
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-foreground tracking-tight">
-              {isLoading ? <Skeleton className="h-8 w-16" /> : metrics?.upcomingMaintenance}
+            <div className="stat-value">
+              {isLoadingMetrics ? <Skeleton className="h-8 w-16" /> : metrics?.upcomingMaintenance ?? 0}
             </div>
-            <div className="text-sm text-foreground-tertiary mt-1 font-medium">
+            <div className="stat-description mt-1">
               {isLoading ? <Skeleton className="h-4 w-24" /> : `${metrics?.overdueMaintenance} overdue`}
             </div>
           </CardContent>
@@ -138,7 +150,7 @@ export function Dashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card className="border-border/50 shadow-sm bg-card/50">
           <CardHeader>
-            <CardTitle className="text-lg font-semibold">Vehicle Utilization</CardTitle>
+            <CardTitle className="card-title-md">Vehicle Utilization</CardTitle>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={250}>
@@ -176,7 +188,7 @@ export function Dashboard() {
 
         <Card className="border-border/50 shadow-sm bg-card/50">
           <CardHeader>
-            <CardTitle className="text-lg font-semibold">Maintenance Cost Trends</CardTitle>
+            <CardTitle className="card-title-md">Maintenance Cost Trends</CardTitle>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={250}>
@@ -209,7 +221,7 @@ export function Dashboard() {
 
       <Card className="border-border/50 shadow-sm bg-card/50">
         <CardHeader>
-          <CardTitle className="text-lg font-semibold">Profitability per Vehicle</CardTitle>
+          <CardTitle className="card-title-md">Profitability per Vehicle</CardTitle>
         </CardHeader>
         <CardContent>
           <ResponsiveContainer width="100%" height={250}>
@@ -226,7 +238,15 @@ export function Dashboard() {
                 }}
                 cursor={{ fill: 'var(--color-muted)', opacity: 0.2 }}
               />
-              <Bar dataKey="profit" fill="var(--color-chart-2)" radius={[6, 6, 6, 6]} barSize={40} />
+              <Bar 
+                dataKey="profit" 
+                radius={[6, 6, 6, 6]} 
+                barSize={40}
+              >
+                {profitabilityData.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={entry.profit >= 0 ? 'hsl(var(--chart-2))' : 'hsl(var(--destructive))'} />
+                ))}
+              </Bar>
             </BarChart>
           </ResponsiveContainer>
         </CardContent>
@@ -236,17 +256,17 @@ export function Dashboard() {
         <div className="lg:col-span-2">
           <Card className="border-border/50 shadow-sm bg-card/50 h-full">
             <CardHeader>
-              <CardTitle className="text-lg font-semibold">Recent Assignments</CardTitle>
+              <CardTitle className="card-title-md">Recent Assignments</CardTitle>
             </CardHeader>
             <CardContent>
               <Table>
                 <TableHeader>
                   <TableRow className="hover:bg-transparent border-border/50">
-                    <TableHead className="text-xs uppercase tracking-wider font-semibold text-foreground-tertiary">ID</TableHead>
-                    <TableHead className="text-xs uppercase tracking-wider font-semibold text-foreground-tertiary">Vehicle</TableHead>
-                    <TableHead className="text-xs uppercase tracking-wider font-semibold text-foreground-tertiary">Driver</TableHead>
-                    <TableHead className="text-xs uppercase tracking-wider font-semibold text-foreground-tertiary">Status</TableHead>
-                    <TableHead className="text-xs uppercase tracking-wider font-semibold text-foreground-tertiary">Completion</TableHead>
+                    <TableHead className="table-header">ID</TableHead>
+                    <TableHead className="table-header">Vehicle</TableHead>
+                    <TableHead className="table-header">Driver</TableHead>
+                    <TableHead className="table-header">Status</TableHead>
+                    <TableHead className="table-header">Completion</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -302,7 +322,7 @@ export function Dashboard() {
 
         <Card className="border-border/50 shadow-sm bg-card/50 h-full">
           <CardHeader>
-            <CardTitle className="text-lg font-semibold">System Alerts</CardTitle>
+            <CardTitle className="card-title-md">System Alerts</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">

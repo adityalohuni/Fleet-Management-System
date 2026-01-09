@@ -1,0 +1,61 @@
+ID,Vehicle ID,Type,Cost,Date,Provider,Description
+33c8250b-6437-4d65-9605-b203dfcc0607,2b30630b-7de6-496e-b8da-c4fa4c5c9b6b,Preventive,207.31,2025-08-03,Elite Vehicle Services,Exhaust system repair
+6eb4e342-e4c6-4130-a7ac-eb93debb0260,c9b4e905-9332-4819-a1d6-33501e21b312,Accident,3681.52,2025-08-18,Professional Auto Care,Transmission fluid change
+83980a7a-b540-435d-967b-5211c93fb108,96dfd645-08ac-4fc8-bf7a-c2145c630409,Accident,3434.54,2025-12-09,Elite Vehicle Services,Tire rotation and alignment
+1956fcf7-e001-48d0-9dae-f228c58e1831,4bf02764-bd3f-461c-a490-585a23205adf,Accident,512.82,2025-09-29,QuickFix Garage,Annual safety inspection
+493e5e7c-729e-4c23-bd4b-9d88359dd6b5,903af0b3-be21-460b-959c-43bede391d8b,Repair,788.93,2025-12-27,Express Service Station,Tire rotation and alignment
+d766427c-2f72-4035-9067-f14813417c53,7bc863e9-4b08-471f-9fa2-88eae6b76611,Accident,4021.26,2025-08-14,Elite Vehicle Services,Exhaust system repair
+b44b7d65-2183-4e1e-b770-cde460f0163a,1d742481-a515-4522-96bc-13e861edca8b,Preventive,266.97,2025-10-19,TruckCare Center,Tire rotation and alignment
+8ff8fb34-5579-46e5-938a-a23891dfaef7,6abc6a45-b4a9-4fed-820f-d57f00da1d3d,Repair,1193.04,2025-12-17,Elite Vehicle Services,Tire rotation and alignment
+6df6a94b-a53a-4ecd-9038-0ec9133d80f4,525ef2d6-e4a9-48e5-9ef7-48a8bc5876d1,Inspection,139.44,2025-09-25,Fleet Maintenance Inc,Exhaust system repair
+c9395d7d-28b3-43cb-81e3-1326fbca276f,b246911b-81a7-4db1-ab69-57df11e8efca,Inspection,82.95,2025-08-03,Professional Auto Care,Air conditioning service
+12e4c82c-39a6-4ee2-a386-118eb27f7ec6,dcab41ac-9e26-4ca8-8463-8bd711a3e4e2,Repair,698.98,2025-12-19,QuickFix Garage,Annual safety inspection
+bb8041f6-7870-44d3-a20a-bcf52f953676,a944c07a-31a4-41cc-a563-3cdbb8f75fbc,Repair,1767.64,2025-09-24,Elite Vehicle Services,Battery replacement
+847e9156-e084-447b-afc2-602a788955fa,a8b1663d-7a7f-4eb9-93d1-0f8eb22edf22,Preventive,119.13,2026-01-02,Premium Auto Repair,Air conditioning service
+f82d1321-8b79-45cb-9092-910e5ade9c72,f544e89d-8e15-4104-8a5a-6eb2d8cb4572,Repair,1553.94,2025-07-28,QuickFix Garage,Battery replacement
+f8a084d0-4a49-46ea-bb66-e832b9fbaee5,7aa2e1d8-6e16-438a-8528-f43db868fc8e,Repair,481.15,2025-10-21,Professional Auto Care,Exhaust system repair
+6cda45ed-3651-4fc2-892a-748e01027a09,a8b1663d-7a7f-4eb9-93d1-0f8eb22edf22,Inspection,100.12,2025-11-11,QuickFix Garage,Annual safety inspection
+09a83577-27a7-4780-8a1a-e0362eb0b530,c3adb2eb-eb83-4439-8523-46e76e8ec83c,Accident,2600.78,2025-12-25,Premium Auto Repair,Air conditioning service
+add8890d-2520-4007-ab09-e863ea73936e,8cf95971-7f03-479b-823e-673404c15c60,Inspection,92.03,2025-08-21,Express Service Station,Exhaust system repair
+e27331bb-edac-4fa8-a907-3f25306660af,18667930-1cbd-469c-b0c2-6603ab315cd6,Inspection,140.13,2025-09-13,Professional Auto Care,Air conditioning service
+97b98fd0-6bce-41cc-b843-552a38c65230,91e8152c-a9dc-4738-8d77-d9914764c94b,Accident,1702.83,2025-08-23,Premium Auto Repair,Brake pad replacement
+69455b4b-7db5-40dd-be9b-31b67946944d,ebf823a8-98bc-4c56-8b32-1d971250e6b8,Preventive,151.87,2025-09-29,Professional Auto Care,Windshield replacement
+9bb8bbaf-41cc-4e7f-90de-b111b8f53067,96dfd645-08ac-4fc8-bf7a-c2145c630409,Preventive,247.35,2025-07-18,Professional Auto Care,Exhaust system repair
+a64c2f70-49c0-49d5-a408-2b6a801cbc7e,6abc6a45-b4a9-4fed-820f-d57f00da1d3d,Repair,1605.07,2025-11-07,Fleet Maintenance Inc,Transmission fluid change
+bf421371-3c84-4eee-9133-13d1d4ba79d5,2d5f3c8e-b263-4dfd-8245-ffadf22cd8cc,Inspection,70.22,2026-01-02,Premium Auto Repair,Transmission fluid change
+e1abfa10-cb6e-4d19-b5ca-bc2033fcbca4,7bc863e9-4b08-471f-9fa2-88eae6b76611,Inspection,131.41,2026-01-02,QuickFix Garage,Windshield replacement
+9ea64523-ed0c-4b9b-92f2-48e4b8fea9b5,d7372952-024c-4139-9da0-bc378e543556,Inspection,145.05,2025-09-11,AutoCare Services,Air conditioning service
+7c1b5d2b-3c4e-4684-b36f-2d83146ae757,c9b4e905-9332-4819-a1d6-33501e21b312,Inspection,61.28,2025-08-12,TruckCare Center,Battery replacement
+419c52bf-28bc-4f6e-8814-727aedbf80f9,91e8152c-a9dc-4738-8d77-d9914764c94b,Accident,836.65,2025-08-15,Premium Auto Repair,Annual safety inspection
+2454fa77-86e6-4a49-9826-280b809dfde3,dc3ed59a-7961-46cb-8078-f1d4aa074386,Accident,3499.37,2025-07-13,Fleet Maintenance Inc,Transmission fluid change
+84a62fa4-84ff-4d45-a526-e9ce6c8d86a2,a944c07a-31a4-41cc-a563-3cdbb8f75fbc,Inspection,107.18,2025-07-18,QuickFix Garage,Engine diagnostics
+89a70624-f0aa-467b-96f0-b67b53aef1c0,69315015-b9f0-43fc-a265-649022aea20e,Accident,4928.48,2025-07-15,Elite Vehicle Services,Engine diagnostics
+1c4d1a12-c8ba-4d5c-8b2e-69886c1dfa7d,3a1696fc-78dc-4008-8b75-abe0c02b2415,Repair,1925.57,2025-12-25,Fleet Maintenance Inc,Engine diagnostics
+e0012084-0849-4e12-a4f6-6e77517f7966,b246911b-81a7-4db1-ab69-57df11e8efca,Repair,1084.44,2025-12-18,Fleet Maintenance Inc,Spark plug replacement
+245e4f1b-f7c1-4f3a-a15a-d4c32e233c6d,e4f9950c-eb8d-4919-a1df-6f75af9c3928,Accident,3483.09,2025-11-06,QuickFix Garage,Annual safety inspection
+56b74820-209a-4b24-b681-25ba8362dd1c,96dfd645-08ac-4fc8-bf7a-c2145c630409,Repair,238.61,2025-12-16,Professional Auto Care,Tire rotation and alignment
+ccdb1edf-6892-40b4-836b-f62ca4a1c2a6,72968014-33dc-4a62-b52e-24670947c089,Preventive,248.4,2025-09-11,TruckCare Center,Air conditioning service
+a323561d-1b2c-46b0-948a-47c6434f5631,c3adb2eb-eb83-4439-8523-46e76e8ec83c,Inspection,80.94,2025-12-12,Premium Auto Repair,Transmission fluid change
+bf3ec0b9-cdc0-4fc1-8bb1-ea6762aae433,3a1696fc-78dc-4008-8b75-abe0c02b2415,Accident,2190.05,2025-10-07,QuickFix Garage,Tire rotation and alignment
+c14be30b-f44d-4d0f-9221-8701a2dfc159,95f4fe13-e684-4141-b4ad-6b790f900dfd,Repair,1963.19,2025-08-14,Express Service Station,Air conditioning service
+b80daf4a-7262-43bb-adbe-7f00cf64e022,dc3ed59a-7961-46cb-8078-f1d4aa074386,Repair,1331.53,2025-09-26,QuickFix Garage,Brake pad replacement
+d6b3f094-0058-4ea7-820c-5403f04761b2,e4f9950c-eb8d-4919-a1df-6f75af9c3928,Preventive,202.07,2025-07-13,QuickFix Garage,Exhaust system repair
+432f6e30-5d14-44d6-84ba-1ce825ac6897,14453d9a-0585-4262-8268-7182ad8c0088,Inspection,102.29,2025-10-03,Premium Auto Repair,Battery replacement
+69ea37c1-9657-4935-97c0-10d93443173d,4bf02764-bd3f-461c-a490-585a23205adf,Accident,2157.15,2025-12-14,Express Service Station,Exhaust system repair
+678200f9-4ebe-4859-becc-bab62fa357aa,3a1696fc-78dc-4008-8b75-abe0c02b2415,Preventive,60.27,2025-09-03,Premium Auto Repair,Suspension repair
+7899b53b-13c2-4575-a0f3-9026229a74aa,7aa2e1d8-6e16-438a-8528-f43db868fc8e,Accident,2880.54,2025-10-24,Elite Vehicle Services,Oil change and filter replacement
+7289f4c5-5ca9-4707-90ed-46f65cb729fd,c3adb2eb-eb83-4439-8523-46e76e8ec83c,Repair,1019.75,2025-09-04,Fleet Maintenance Inc,Spark plug replacement
+a65aebf9-8292-41a4-9076-442190644caa,f9fb90ff-5ee8-4d98-b3d1-37b84ae569a3,Repair,978.32,2025-12-22,AutoCare Services,Engine diagnostics
+274a1cef-520a-415a-b936-dbd4c8bc7b38,6abc6a45-b4a9-4fed-820f-d57f00da1d3d,Repair,1343.57,2025-08-10,AutoCare Services,Windshield replacement
+b8bda4b0-346d-446b-bdee-632353030113,cb08c985-e612-44a2-a2ff-dbc0643ea4e0,Repair,402.32,2025-10-25,TruckCare Center,Oil change and filter replacement
+b3696d6e-8920-44a6-a049-c900e585716a,dc3ed59a-7961-46cb-8078-f1d4aa074386,Repair,373.65,2025-11-07,QuickFix Garage,Spark plug replacement
+9876bb37-2ca3-481e-acf9-8dd01f2c5d5b,c9df6869-8992-491c-84c9-ac8c93c2d8f4,Preventive,168.94,2025-12-04,Elite Vehicle Services,Spark plug replacement
+c0e35042-9ca4-4355-88c0-992ef1d0b400,2d5f3c8e-b263-4dfd-8245-ffadf22cd8cc,Inspection,98.32,2025-09-08,QuickFix Garage,Tire rotation and alignment
+0dc5b6c0-b961-410d-a0b7-a88021904c7a,1d742481-a515-4522-96bc-13e861edca8b,Accident,1323.79,2026-01-08,QuickFix Garage,Coolant system flush
+40519f80-a4c2-44d7-a99f-9ae79fc5ee2d,405d588d-d91a-4217-acf6-b805ccadfdfc,Accident,1641.85,2025-10-12,AutoCare Services,Windshield replacement
+60829925-729a-4baf-b11a-1949a74ea155,e4f9950c-eb8d-4919-a1df-6f75af9c3928,Accident,4272.97,2025-11-15,Fleet Maintenance Inc,Coolant system flush
+c390354e-e54e-4e4b-a0ed-3a049377f85e,ebf823a8-98bc-4c56-8b32-1d971250e6b8,Inspection,101.18,2025-12-14,QuickFix Garage,Windshield replacement
+e70b1945-923e-42c4-8147-54817acc5891,ebf823a8-98bc-4c56-8b32-1d971250e6b8,Repair,1765.85,2025-11-06,Fleet Maintenance Inc,Battery replacement
+b2796b34-0445-41b3-8432-b1c4ac355494,dc3ed59a-7961-46cb-8078-f1d4aa074386,Inspection,30.13,2025-09-02,TruckCare Center,Coolant system flush
+48cdc306-f69b-4dc4-8fd9-02f6ba67fcd8,1d742481-a515-4522-96bc-13e861edca8b,Repair,495.43,2025-07-19,Professional Auto Care,Suspension repair
+24e94c8b-812a-4647-837b-a8dbadaf4749,c9df6869-8992-491c-84c9-ac8c93c2d8f4,Preventive,96.14,2025-08-08,Elite Vehicle Services,Oil change and filter replacement

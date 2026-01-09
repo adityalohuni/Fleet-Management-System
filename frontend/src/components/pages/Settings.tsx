@@ -5,7 +5,8 @@ import { Label } from "../ui/label";
 import { Switch } from "../ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import { Separator } from "../ui/separator";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
 import { useAppSettings, useCreateUser, useUpdateAppSettings, useUpdateUser, useUsers } from "../../hooks/useSettings";
 import { Skeleton } from "../ui/skeleton";
 import type { UpdateAppSettingsDto } from "../../dto/settings.dto";
@@ -18,6 +19,23 @@ export function Settings() {
   const updateUser = useUpdateUser();
 
   const [form, setForm] = useState<UpdateAppSettingsDto | null>(null);
+  const [openIntegration, setOpenIntegration] = useState<string | null>(null);
+  const [integrationForms, setIntegrationForms] = useState<Record<string, string>>(() => {
+    try {
+      return {
+        google_maps_key: localStorage.getItem('google_maps_key') || '',
+        stripe_key: localStorage.getItem('stripe_key') || '',
+        twilio_key: localStorage.getItem('twilio_key') || '',
+      };
+    } catch (error) {
+      console.warn('Failed to load integration keys from localStorage:', error);
+      return {
+        google_maps_key: '',
+        stripe_key: '',
+        twilio_key: '',
+      };
+    }
+  });
 
   useEffect(() => {
     if (!settings) return;
@@ -38,12 +56,24 @@ export function Settings() {
       notify_desktop: settings.notify_desktop,
       notify_weekly_summary: settings.notify_weekly_summary,
     });
+    
+    // Store preferences in localStorage for client-side access
+    try {
+      localStorage.setItem('userPreferences', JSON.stringify({
+        distance_unit: settings.distance_unit,
+        currency: settings.currency,
+        date_format: settings.date_format,
+      }));
+    } catch (error) {
+      console.warn('Failed to save preferences to localStorage:', error);
+    }
   }, [settings]);
 
   const [newUser, setNewUser] = useState({
     email: "",
     password: "",
     role: "Driver",
+    name: "",
     is_active: true,
   });
 
@@ -56,23 +86,12 @@ export function Settings() {
     );
   }, [users]);
 
-  const canSave = useMemo(() => !!form && !updateSettings.isPending, [form, updateSettings.isPending]);
-
-  const onSaveCompany = async () => {
-    if (!form) return;
-    await updateSettings.mutateAsync(form);
-  };
-
-  const updateField = <K extends keyof UpdateAppSettingsDto>(key: K, value: UpdateAppSettingsDto[K]) => {
-    setForm((prev) => (prev ? { ...prev, [key]: value } : prev));
-  };
-
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between border-b border-border/40 pb-6">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-foreground mb-2">Settings</h1>
-          <p className="text-base text-foreground-secondary">Manage system preferences and configurations</p>
+          <h1 className="page-header mb-2">Settings</h1>
+          <p className="page-subtitle">Manage system preferences and configurations</p>
         </div>
       </div>
 
@@ -86,66 +105,11 @@ export function Settings() {
 
         <TabsContent value="general" className="space-y-6">
           {isError && (
-            <div className="text-sm text-destructive">
-              Failed to load settings.
+            <div className="rounded-lg bg-destructive/10 border border-destructive/30 p-4 text-sm text-destructive">
+              <p className="font-medium">Failed to load settings</p>
+              <p className="text-xs mt-1">Please check your connection and refresh the page</p>
             </div>
           )}
-          <Card>
-            <CardHeader>
-              <CardTitle>Company Information</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label className="text-foreground font-medium">Company Name</Label>
-                  {isLoading || !form ? (
-                    <Skeleton className="h-10 w-full" />
-                  ) : (
-                    <Input value={form.company_name} onChange={(e) => updateField('company_name', e.target.value)} />
-                  )}
-                </div>
-                <div>
-                  <Label className="text-foreground font-medium">Contact Email</Label>
-                  {isLoading || !form ? (
-                    <Skeleton className="h-10 w-full" />
-                  ) : (
-                    <Input type="email" value={form.contact_email} onChange={(e) => updateField('contact_email', e.target.value)} />
-                  )}
-                </div>
-                <div>
-                  <Label className="text-foreground font-medium">Phone Number</Label>
-                  {isLoading || !form ? (
-                    <Skeleton className="h-10 w-full" />
-                  ) : (
-                    <Input type="tel" value={form.phone_number} onChange={(e) => updateField('phone_number', e.target.value)} />
-                  )}
-                </div>
-                <div>
-                  <Label className="text-foreground font-medium">Time Zone</Label>
-                  {isLoading || !form ? (
-                    <Skeleton className="h-10 w-full" />
-                  ) : (
-                    <Input value={form.time_zone} onChange={(e) => updateField('time_zone', e.target.value)} />
-                  )}
-                </div>
-              </div>
-              <Separator />
-              <div>
-                <Label className="text-foreground font-medium">Address</Label>
-                {isLoading || !form ? (
-                  <Skeleton className="h-10 w-full" />
-                ) : (
-                  <Input value={form.address} onChange={(e) => updateField('address', e.target.value)} />
-                )}
-              </div>
-              <div className="flex justify-end">
-                <Button className="bg-orange-500 hover:bg-orange-600" onClick={onSaveCompany} disabled={!canSave}>
-                  Save Changes
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-
           <Card>
             <CardHeader>
               <CardTitle>System Preferences</CardTitle>
@@ -167,6 +131,13 @@ export function Settings() {
                       const nextForm = { ...form, distance_unit: next };
                       setForm(nextForm);
                       updateSettings.mutate(nextForm);
+                      // Update localStorage for client-side access
+                      try {
+                        const prefs = JSON.parse(localStorage.getItem('userPreferences') || '{}');
+                        localStorage.setItem('userPreferences', JSON.stringify({ ...prefs, distance_unit: next }));
+                      } catch (error) {
+                        console.warn('Failed to update localStorage:', error);
+                      }
                     }}
                   >
                     <option value="Miles">Miles</option>
@@ -191,6 +162,13 @@ export function Settings() {
                       const nextForm = { ...form, currency: next };
                       setForm(nextForm);
                       updateSettings.mutate(nextForm);
+                      // Update localStorage for client-side access
+                      try {
+                        const prefs = JSON.parse(localStorage.getItem('userPreferences') || '{}');
+                        localStorage.setItem('userPreferences', JSON.stringify({ ...prefs, currency: next }));
+                      } catch (error) {
+                        console.warn('Failed to update localStorage:', error);
+                      }
                     }}
                   >
                     <option value="USD ($)">USD ($)</option>
@@ -216,6 +194,13 @@ export function Settings() {
                       const nextForm = { ...form, date_format: next };
                       setForm(nextForm);
                       updateSettings.mutate(nextForm);
+                      // Update localStorage for client-side access
+                      try {
+                        const prefs = JSON.parse(localStorage.getItem('userPreferences') || '{}');
+                        localStorage.setItem('userPreferences', JSON.stringify({ ...prefs, date_format: next }));
+                      } catch (error) {
+                        console.warn('Failed to update localStorage:', error);
+                      }
                     }}
                   >
                     <option value="MM/DD/YYYY">MM/DD/YYYY</option>
@@ -223,6 +208,29 @@ export function Settings() {
                     <option value="YYYY-MM-DD">YYYY-MM-DD</option>
                   </select>
                 )}
+              </div>
+              <Separator />
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="text-foreground font-medium">Dashboard Auto-Refresh</div>
+                  <div className="text-sm text-foreground-tertiary">Automatically refresh dashboard every 30 seconds</div>
+                </div>
+                <Switch
+                  defaultChecked={(() => {
+                    try {
+                      return localStorage.getItem('dashboardAutoRefresh') === 'true';
+                    } catch (error) {
+                      return false;
+                    }
+                  })()}
+                  onCheckedChange={(checked) => {
+                    try {
+                      localStorage.setItem('dashboardAutoRefresh', checked ? 'true' : 'false');
+                    } catch (error) {
+                      console.warn('Failed to update localStorage:', error);
+                    }
+                  }}
+                />
               </div>
             </CardContent>
           </Card>
@@ -402,6 +410,15 @@ export function Settings() {
                   <div className="text-foreground font-medium">Add New User</div>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
+                      <Label className="text-foreground font-medium">Full Name</Label>
+                      <Input
+                        type="text"
+                        placeholder="John Doe"
+                        value={newUser.name}
+                        onChange={(e) => setNewUser((p) => ({ ...p, name: e.target.value }))}
+                      />
+                    </div>
+                    <div>
                       <Label className="text-foreground font-medium">Email</Label>
                       <Input
                         type="email"
@@ -447,7 +464,7 @@ export function Settings() {
                       disabled={!newUser.email || !newUser.password || createUser.isPending}
                       onClick={async () => {
                         await createUser.mutateAsync(newUser);
-                        setNewUser({ email: "", password: "", role: "Driver", is_active: true });
+                        setNewUser({ email: "", password: "", role: "Driver", name: "", is_active: true });
                       }}
                     >
                       Add New User
@@ -469,7 +486,8 @@ export function Settings() {
                   users?.map((u) => (
                     <div key={u.id} className="flex items-center justify-between p-4 border border-border rounded-lg gap-4">
                       <div className="min-w-0">
-                        <div className="text-foreground truncate">{u.email}</div>
+                        <div className="text-foreground truncate">{u.name || u.email}</div>
+                        <div className="text-xs text-foreground-tertiary truncate">{u.email}</div>
                         <div className="text-sm text-foreground-secondary">{userEdits[u.id]?.is_active ? 'Active' : 'Inactive'}</div>
                       </div>
                       <div className="flex items-center gap-3">
@@ -529,27 +547,135 @@ export function Settings() {
             <CardContent className="space-y-4">
               <div className="flex items-center justify-between p-4 border border-border rounded-lg">
                 <div>
-                  <div className="text-foreground">Google Maps API</div>
+                  <div className="text-foreground font-medium">Google Maps API</div>
                   <div className="text-sm text-foreground-secondary">Route optimization and tracking</div>
+                  <div className="text-xs text-foreground-tertiary mt-1">{integrationForms.google_maps_key ? '✓ Configured' : '○ Not configured'}</div>
                 </div>
-                <Button variant="outline" size="sm">Configure</Button>
+                <Button variant="outline" size="sm" onClick={() => setOpenIntegration('google_maps')}>Configure</Button>
               </div>
               <div className="flex items-center justify-between p-4 border border-border rounded-lg">
                 <div>
-                  <div className="text-foreground">Payment Gateway</div>
-                  <div className="text-sm text-foreground-secondary">Process service payments</div>
+                  <div className="text-foreground font-medium">Stripe Payment Gateway</div>
+                  <div className="text-sm text-foreground-secondary">Process service payments securely</div>
+                  <div className="text-xs text-foreground-tertiary mt-1">{integrationForms.stripe_key ? '✓ Configured' : '○ Not configured'}</div>
                 </div>
-                <Button variant="outline" size="sm">Configure</Button>
+                <Button variant="outline" size="sm" onClick={() => setOpenIntegration('stripe')}>Configure</Button>
               </div>
               <div className="flex items-center justify-between p-4 border border-border rounded-lg">
                 <div>
-                  <div className="text-foreground">SMS Notifications</div>
-                  <div className="text-sm text-foreground-secondary">Send SMS alerts to drivers</div>
+                  <div className="text-foreground font-medium">Twilio SMS Service</div>
+                  <div className="text-sm text-foreground-secondary">Send SMS alerts to drivers and operators</div>
+                  <div className="text-xs text-foreground-tertiary mt-1">{integrationForms.twilio_key ? '✓ Configured' : '○ Not configured'}</div>
                 </div>
-                <Button variant="outline" size="sm">Configure</Button>
+                <Button variant="outline" size="sm" onClick={() => setOpenIntegration('twilio')}>Configure</Button>
               </div>
             </CardContent>
           </Card>
+
+          {/* Google Maps Configuration Modal */}
+          {openIntegration === 'google_maps' && (
+            <Card className="border-blue-500/30 bg-blue-500/5">
+              <CardHeader>
+                <CardTitle>Google Maps API Configuration</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="google_maps_key">API Key</Label>
+                  <Input
+                    id="google_maps_key"
+                    type="password"
+                    placeholder="Enter your Google Maps API key"
+                    value={integrationForms.google_maps_key}
+                    onChange={(e) => setIntegrationForms({...integrationForms, google_maps_key: e.target.value})}
+                  />
+                  <p className="text-xs text-foreground-tertiary mt-1">
+                    Get your API key from <a href="https://console.cloud.google.com" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">Google Cloud Console</a>
+                  </p>
+                </div>
+                <div className="flex gap-2">
+                  <Button
+                    onClick={() => {
+                      localStorage.setItem('google_maps_key', integrationForms.google_maps_key);
+                      setOpenIntegration(null);
+                    }}
+                  >
+                    Save
+                  </Button>
+                  <Button variant="outline" onClick={() => setOpenIntegration(null)}>Cancel</Button>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Stripe Configuration Modal */}
+          {openIntegration === 'stripe' && (
+            <Card className="border-purple-500/30 bg-purple-500/5">
+              <CardHeader>
+                <CardTitle>Stripe Payment Gateway Configuration</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="stripe_key">Publishable Key</Label>
+                  <Input
+                    id="stripe_key"
+                    type="password"
+                    placeholder="pk_live_... or pk_test_..."
+                    value={integrationForms.stripe_key}
+                    onChange={(e) => setIntegrationForms({...integrationForms, stripe_key: e.target.value})}
+                  />
+                  <p className="text-xs text-foreground-tertiary mt-1">
+                    Get your keys from <a href="https://dashboard.stripe.com/apikeys" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">Stripe Dashboard</a>
+                  </p>
+                </div>
+                <div className="flex gap-2">
+                  <Button
+                    onClick={() => {
+                      localStorage.setItem('stripe_key', integrationForms.stripe_key);
+                      setOpenIntegration(null);
+                    }}
+                  >
+                    Save
+                  </Button>
+                  <Button variant="outline" onClick={() => setOpenIntegration(null)}>Cancel</Button>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Twilio Configuration Modal */}
+          {openIntegration === 'twilio' && (
+            <Card className="border-red-500/30 bg-red-500/5">
+              <CardHeader>
+                <CardTitle>Twilio SMS Service Configuration</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="twilio_key">API Key</Label>
+                  <Input
+                    id="twilio_key"
+                    type="password"
+                    placeholder="Enter your Twilio API key"
+                    value={integrationForms.twilio_key}
+                    onChange={(e) => setIntegrationForms({...integrationForms, twilio_key: e.target.value})}
+                  />
+                  <p className="text-xs text-foreground-tertiary mt-1">
+                    Get your credentials from <a href="https://www.twilio.com/console" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">Twilio Console</a>
+                  </p>
+                </div>
+                <div className="flex gap-2">
+                  <Button
+                    onClick={() => {
+                      localStorage.setItem('twilio_key', integrationForms.twilio_key);
+                      setOpenIntegration(null);
+                    }}
+                  >
+                    Save
+                  </Button>
+                  <Button variant="outline" onClick={() => setOpenIntegration(null)}>Cancel</Button>
+                </div>
+              </CardContent>
+            </Card>
+          )}
         </TabsContent>
       </Tabs>
     </div>

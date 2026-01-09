@@ -1,0 +1,251 @@
+/* Utilitarian/Brutalist Design System */
+
+.theme-utilitarian {
+  /* Typography - Monospace */
+  --font-sans: 'Courier New', 'Courier', monospace;
+  --font-mono: 'Courier New', 'Courier', monospace;
+  
+  /* Remove rounded corners */
+  --radius: 0px;
+  
+  /* High contrast colors - LIGHT MODE */
+  --background: 0 0% 98%;
+  --foreground: 0 0% 5%;
+  
+  --card: 0 0% 100%;
+  --card-foreground: 0 0% 5%;
+  
+  --popover: 0 0% 100%;
+  --popover-foreground: 0 0% 5%;
+  
+  --primary: 0 0% 10%;
+  --primary-foreground: 0 0% 98%;
+  
+  --secondary: 0 0% 92%;
+  --secondary-foreground: 0 0% 10%;
+  
+  --muted: 0 0% 88%;
+  --muted-foreground: 0 0% 30%;
+  
+  --accent: 0 0% 88%;
+  --accent-foreground: 0 0% 10%;
+  
+  --destructive: 0 84% 40%;
+  --destructive-foreground: 0 0% 98%;
+  
+  --border: 0 0% 20%;
+  --input: 0 0% 20%;
+  --ring: 0 0% 20%;
+}
+
+.theme-utilitarian.dark {
+  /* High contrast colors - DARK MODE */
+  --background: 0 0% 12%;
+  --foreground: 0 0% 98%;
+  
+  --card: 0 0% 16%;
+  --card-foreground: 0 0% 98%;
+  
+  --popover: 0 0% 12%;
+  --popover-foreground: 0 0% 98%;
+  
+  --primary: 0 0% 98%;
+  --primary-foreground: 0 0% 12%;
+  
+  --secondary: 0 0% 22%;
+  --secondary-foreground: 0 0% 98%;
+  
+  --muted: 0 0% 25%;
+  --muted-foreground: 0 0% 75%;
+  
+  --accent: 0 0% 25%;
+  --accent-foreground: 0 0% 98%;
+  
+  --destructive: 0 84% 55%;
+  --destructive-foreground: 0 0% 98%;
+  
+  --border: 0 0% 85%;
+  --input: 0 0% 85%;
+  --ring: 0 0% 85%;
+}
+
+.theme-utilitarian.dark {
+  /* High contrast colors - DARK MODE */
+  --background: 0 0% 8%;
+  --foreground: 0 0% 98%;
+  
+  --card: 0 0% 8%;
+  --card-foreground: 0 0% 98%;
+  
+  --popover: 0 0% 8%;
+  --popover-foreground: 0 0% 98%;
+  
+  --primary: 0 0% 98%;
+  --primary-foreground: 0 0% 8%;
+  
+  --secondary: 0 0% 15%;
+  --secondary-foreground: 0 0% 98%;
+  
+  --muted: 0 0% 20%;
+  --muted-foreground: 0 0% 80%;
+  
+  --accent: 0 0% 20%;
+  --accent-foreground: 0 0% 98%;
+  
+  --destructive: 0 84% 55%;
+  --destructive-foreground: 0 0% 98%;
+  
+  --border: 0 0% 90%;
+  --input: 0 0% 90%;
+  --ring: 0 0% 90%;
+}
+
+/* Utilitarian component overrides */
+.theme-utilitarian * {
+  border-radius: 0 !important;
+  font-family: 'Courier New', 'Courier', monospace !important;
+}
+
+/* Force background on all elements */
+.theme-utilitarian {
+  background: hsl(var(--background)) !important;
+}
+
+.theme-utilitarian body,
+.theme-utilitarian main,
+.theme-utilitarian [role="main"],
+.theme-utilitarian > * {
+  background: hsl(var(--background)) !important;
+}
+
+/* Force all text to use theme foreground */
+.theme-utilitarian,
+.theme-utilitarian body,
+.theme-utilitarian * {
+  color: hsl(var(--foreground)) !important;
+}
+
+/* Specific element overrides */
+.theme-utilitarian h1,
+.theme-utilitarian h2,
+.theme-utilitarian h3,
+.theme-utilitarian h4,
+.theme-utilitarian h5,
+.theme-utilitarian h6,
+.theme-utilitarian p,
+.theme-utilitarian span,
+.theme-utilitarian div,
+.theme-utilitarian a,
+.theme-utilitarian label,
+.theme-utilitarian li {
+  color: hsl(var(--foreground)) !important;
+}
+
+.theme-utilitarian .card,
+.theme-utilitarian [data-slot="card"] {
+  border: 2px solid hsl(var(--border)) !important;
+  background: hsl(var(--card)) !important;
+  color: hsl(var(--card-foreground)) !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+}
+
+.theme-utilitarian button,
+.theme-utilitarian [role="button"] {
+  border: 2px solid hsl(var(--border)) !important;
+  font-weight: bold !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em !important;
+  color: hsl(var(--foreground)) !important;
+  background: hsl(var(--background)) !important;
+}
+
+.theme-utilitarian input,
+.theme-utilitarian select,
+.theme-utilitarian textarea,
+.theme-utilitarian [role="combobox"] {
+  border: 2px solid hsl(var(--border)) !important;
+  background: hsl(var(--background)) !important;
+  color: hsl(var(--foreground)) !important;
+}
+
+.theme-utilitarian .glass,
+.theme-utilitarian [class*="backdrop-blur"],
+.theme-utilitarian [data-slot*="content"],
+.theme-utilitarian [data-slot*="header"] {
+  backdrop-filter: none !important;
+  background: hsl(var(--background)) !important;
+  border: 2px solid hsl(var(--border)) !important;
+  color: hsl(var(--foreground)) !important;
+}
+
+/* Remove shadows and blur effects */
+.theme-utilitarian [class*="shadow"],
+.theme-utilitarian [class*="blur"] {
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+}
+
+/* Ensure table elements have proper colors */
+.theme-utilitarian table,
+.theme-utilitarian thead,
+.theme-utilitarian tbody,
+.theme-utilitarian tr,
+.theme-utilitarian td,
+.theme-utilitarian th {
+  border-color: hsl(var(--border)) !important;
+  color: hsl(var(--foreground)) !important;
+  background: hsl(var(--background)) !important;
+}
+
+/* Badge and status colors */
+.theme-utilitarian [class*="badge"],
+.theme-utilitarian [class*="status"] {
+  border: 1px solid hsl(var(--border)) !important;
+  color: hsl(var(--foreground)) !important;
+  background: hsl(var(--secondary)) !important;
+}
+
+/* Ensure proper text colors for various elements */
+.theme-utilitarian [class*="text-"] {
+  color: inherit !important;
+}
+
+.theme-utilitarian .text-muted-foreground,
+.theme-utilitarian [class*="muted"],
+.theme-utilitarian [class*="secondary"] {
+  color: hsl(var(--muted-foreground)) !important;
+}
+
+/* Dense layout */
+.theme-utilitarian {
+  --spacing-scale: 0.75;
+}
+
+.theme-utilitarian [class*="p-"] {
+  padding: calc(var(--spacing-scale) * 1rem) !important;
+}
+
+.theme-utilitarian [class*="gap-"] {
+  gap: calc(var(--spacing-scale) * 0.5rem) !important;
+}
+
+/* Bold borders everywhere */
+.theme-utilitarian [class*="border"] {
+  border-width: 2px !important;
+  border-color: hsl(var(--border)) !important;
+}
+
+/* Grid-based structure emphasis */
+.theme-utilitarian .grid {
+  border: 2px solid hsl(var(--border));
+}
+
+/* Modal and overlay backgrounds */
+.theme-utilitarian [role="dialog"],
+.theme-utilitarian [data-slot*="dialog"],
+.theme-utilitarian [role="menu"] {
+  background: hsl(var(--background)) !important;
+  color: hsl(var(--foreground)) !important;
+  border: 2px solid hsl(var(--border)) !important;
+}

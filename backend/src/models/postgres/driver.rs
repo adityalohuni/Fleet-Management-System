@@ -19,9 +19,27 @@ pub struct Driver {
     pub user_id: Uuid,
     pub license_number: String,
     pub status: DriverStatus,
+    pub phone: Option<String>,
+    pub wage_rate: Option<rust_decimal::Decimal>,
+    pub license_expiry: Option<chrono::NaiveDate>,
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,
     pub deleted_at: Option<DateTime<Utc>>,
+}
+
+#[derive(Debug, Serialize, Deserialize, FromRow, Clone, ToSchema)]
+pub struct DriverWithUser {
+    pub id: Uuid,
+    pub user_id: Uuid,
+    pub license_number: String,
+    pub status: DriverStatus,
+    pub email: String,
+    pub name: Option<String>,
+    pub phone: Option<String>,
+    pub wage_rate: Option<rust_decimal::Decimal>,
+    pub license_expiry: Option<chrono::NaiveDate>,
+    pub created_at: DateTime<Utc>,
+    pub updated_at: DateTime<Utc>,
 }
 
 #[derive(Debug, Deserialize, ToSchema)]

@@ -27,15 +27,18 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
-import { useDrivers, useCreateDriver, useUpdateDriver, useDeleteDriver } from "../../hooks/useDrivers";
+import { useDrivers, useCreateDriver, useUpdateDriver, useDeleteDriver, useDriverAssignments } from "../../hooks/useDrivers";
 import { Skeleton } from "../ui/skeleton";
 import { toast, formatApiError } from "../../lib/toast";
 import { Driver } from "../../types";
+import { useAuth } from "../../contexts/AuthContext";
+import { validateDriverForm, validatePhone, validateEmail } from "../../lib/validation";
 
 export function Drivers() {
   const [selectedDriverId, setSelectedDriverId] = useState<string | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
 
   // Form state
   const [name, setName] = useState("");
@@ -48,6 +51,8 @@ export function Drivers() {
   const createDriver = useCreateDriver();
   const updateDriver = useUpdateDriver();
   const deleteDriver = useDeleteDriver();
+  const { data: assignmentHistory, isLoading: isAssignmentsLoading } = useDriverAssignments(selectedDriverId || "");
+  const { user } = useAuth();
 
   const resetForm = () => {
     setName("");
@@ -56,6 +61,7 @@ export function Drivers() {
     setPhone("");
     setEmail("");
     setEditingId(null);
+    setValidationErrors({});
   };
 
   const handleOpenDialog = (open: boolean) => {
@@ -72,11 +78,27 @@ export function Drivers() {
     setPhone(driver.phone);
     setEmail(driver.email);
     setEditingId(driver.id);
+    setValidationErrors({});
     setIsDialogOpen(true);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validate form
+    const validation = validateDriverForm({
+      name,
+      license,
+      email,
+      phone,
+      availability,
+    });
+
+    if (!validation.isValid) {
+      setValidationErrors(validation.errors);
+      return;
+    }
+
     const toastId = toast.loading(editingId ? 'Updating driver...' : 'Creating driver...');
     
     try {
@@ -93,6 +115,9 @@ export function Drivers() {
         });
         toast.update(toastId, 'success', "Driver updated successfully");
       } else {
+        if (!user?.id) {
+          throw new Error("User not authenticated");
+        }
         await createDriver.mutateAsync({
           name,
           license,
@@ -102,6 +127,7 @@ export function Drivers() {
           licenseExpiry: "2026-01-01", // Default for now
           hoursThisWeek: 0,
           wageRate: 25,
+          user_id: user.id,
         });
         toast.update(toastId, 'success', "Driver created successfully");
       }
@@ -144,8 +170,8 @@ export function Drivers() {
     <div className="space-y-6">
       <div className="flex items-center justify-between border-b border-border/40 pb-6">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-foreground mb-2">Drivers</h1>
-          <p className="text-base text-foreground-secondary">Manage driver profiles, schedules, and assignments</p>
+          <h1 className="page-header mb-2">Drivers</h1>
+          <p className="page-subtitle">Manage driver profiles and assignments</p>
         </div>
         <Dialog open={isDialogOpen} onOpenChange={handleOpenDialog}>
           <DialogTrigger asChild>
@@ -160,27 +186,39 @@ export function Drivers() {
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-4 mt-4">
               <div className="space-y-2">
-                <label className="text-sm font-medium">Name</label>
+                <label className="text-sm font-medium">Name *</label>
                 <Input 
                   placeholder="John Doe" 
                   value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  required
+                  onChange={(e) => {
+                    setName(e.target.value);
+                    if (validationErrors.name) {
+                      setValidationErrors({...validationErrors, name: ''});
+                    }
+                  }}
+                  className={validationErrors.name ? 'border-red-500' : ''}
                 />
+                {validationErrors.name && <p className="text-sm text-red-500">{validationErrors.name}</p>}
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-medium">License Number</label>
+                <label className="text-sm font-medium">License Number *</label>
                 <Input 
                   placeholder="DL-XXXXXXX" 
                   value={license}
-                  onChange={(e) => setLicense(e.target.value)}
-                  required
+                  onChange={(e) => {
+                    setLicense(e.target.value);
+                    if (validationErrors.license) {
+                      setValidationErrors({...validationErrors, license: ''});
+                    }
+                  }}
+                  className={validationErrors.license ? 'border-red-500' : ''}
                 />
+                {validationErrors.license && <p className="text-sm text-red-500">{validationErrors.license}</p>}
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-medium">Status</label>
+                <label className="text-sm font-medium">Status *</label>
                 <Select value={availability} onValueChange={(val: any) => setAvailability(val)}>
-                  <SelectTrigger>
+                  <SelectTrigger className={validationErrors.availability ? 'border-red-500' : ''}>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -189,14 +227,22 @@ export function Drivers() {
                     <SelectItem value="Off Duty">Off Duty</SelectItem>
                   </SelectContent>
                 </Select>
+                {validationErrors.availability && <p className="text-sm text-red-500">{validationErrors.availability}</p>}
               </div>
               <div className="space-y-2">
                 <label className="text-sm font-medium">Phone</label>
                 <Input 
                   placeholder="(555) 123-4567" 
                   value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
+                  onChange={(e) => {
+                    setPhone(e.target.value);
+                    if (validationErrors.phone) {
+                      setValidationErrors({...validationErrors, phone: ''});
+                    }
+                  }}
+                  className={validationErrors.phone ? 'border-red-500' : ''}
                 />
+                {validationErrors.phone && <p className="text-sm text-red-500">{validationErrors.phone}</p>}
               </div>
               <div className="space-y-2">
                 <label className="text-sm font-medium">Email</label>
@@ -204,8 +250,15 @@ export function Drivers() {
                   type="email"
                   placeholder="driver@example.com" 
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                    if (validationErrors.email) {
+                      setValidationErrors({...validationErrors, email: ''});
+                    }
+                  }}
+                  className={validationErrors.email ? 'border-red-500' : ''}
                 />
+                {validationErrors.email && <p className="text-sm text-red-500">{validationErrors.email}</p>}
               </div>
               <div className="flex justify-end gap-2 mt-6">
                 <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
@@ -374,10 +427,51 @@ export function Drivers() {
              </div>
           </div>
           <div className="mt-6">
-            <h3 className="text-lg font-medium mb-2">Assignment History</h3>
-            <div className="text-center py-8 text-foreground-secondary border rounded-md">
-                Assignment history not yet connected to backend
-            </div>
+            <h3 className="section-header-sm">Assignment History</h3>
+            {isAssignmentsLoading ? (
+              <div className="space-y-2 mt-2">
+                <Skeleton className="h-16 w-full" />
+                <Skeleton className="h-16 w-full" />
+              </div>
+            ) : assignmentHistory && assignmentHistory.length > 0 ? (
+              <div className="mt-2 space-y-2">
+                {assignmentHistory.map((assignment) => (
+                  <div
+                    key={assignment.id}
+                    className="border rounded-md p-4 hover:bg-accent/50 transition-colors"
+                  >
+                    <div className="flex justify-between items-start">
+                      <div className="flex-1">
+                        <div className="font-medium text-foreground">Vehicle ID: {assignment.vehicleId}</div>
+                        <div className="text-sm text-foreground-secondary mt-1">
+                          Started: {new Date(assignment.startDate).toLocaleDateString()}
+                        </div>
+                        {assignment.endDate && (
+                          <div className="text-sm text-foreground-secondary">
+                            Ended: {new Date(assignment.endDate).toLocaleDateString()}
+                          </div>
+                        )}
+                      </div>
+                      <Badge
+                        variant={
+                          assignment.status === "Completed"
+                            ? "default"
+                            : assignment.status === "Active"
+                            ? "secondary"
+                            : "outline"
+                        }
+                      >
+                        {assignment.status}
+                      </Badge>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-8 text-foreground-secondary border rounded-md mt-2">
+                No assignment history found for this driver
+              </div>
+            )}
           </div>
         </DialogContent>
       </Dialog>

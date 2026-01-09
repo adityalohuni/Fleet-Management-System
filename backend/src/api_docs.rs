@@ -3,7 +3,7 @@ use utoipa::openapi::security::{SecurityScheme, HttpBuilder, HttpAuthScheme};
 use crate::models::postgres::{
     vehicle::{Vehicle, CreateVehicleDto, VehicleType, VehicleStatus, FuelType},
     user::{User, CreateUserDto, UserRole, Role},
-    driver::{Driver, CreateDriverDto, DriverStatus},
+    driver::{Driver, DriverWithUser, CreateDriverDto, DriverStatus},
     assignment::{VehicleAssignment, CreateAssignmentDto, AssignmentStatus},
     maintenance::{MaintenanceRecord, CreateMaintenanceRecordDto, MaintenanceType, Alert, CreateAlertDto, AlertSeverity},
     logistics::{Customer, CreateCustomerDto, TransportJob, CreateTransportJobDto, JobStatus, Route, CreateRouteDto, Shipment, CreateShipmentDto},
@@ -41,7 +41,7 @@ impl Modify for SecurityAddon {
         schemas(
             Vehicle, CreateVehicleDto, VehicleType, VehicleStatus, FuelType,
             User, CreateUserDto, UserRole, Role,
-            Driver, CreateDriverDto, DriverStatus,
+            Driver, DriverWithUser, CreateDriverDto, DriverStatus,
             VehicleAssignment, CreateAssignmentDto, AssignmentStatus,
             MaintenanceRecord, CreateMaintenanceRecordDto, MaintenanceType, Alert, CreateAlertDto, AlertSeverity,
             Customer, CreateCustomerDto, TransportJob, CreateTransportJobDto, JobStatus, Route, CreateRouteDto, Shipment, CreateShipmentDto,

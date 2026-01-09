@@ -1,25 +1,24 @@
-import { 
-  VehicleService, 
-  DriverService, 
-  AssignmentService, 
-  MaintenanceService, 
-  FinancialService 
-} from '../client';
+import api from './api';
 import { DashboardMetrics, ChartData, Assignment, Alert } from '../types';
 
 export const DashboardService = {
   getMetrics: async (): Promise<DashboardMetrics> => {
     try {
-      const [vehicles, drivers, assignments, alerts] = await Promise.all([
-        VehicleService.getVehicles(),
-        DriverService.getDrivers(),
-        AssignmentService.getAssignments(),
-        MaintenanceService.getAlerts(),
+      const [vehiclesRes, driversRes, assignmentsRes, alertsRes] = await Promise.all([
+        api.get<any[]>('/vehicles'),
+        api.get<any[]>('/drivers'),
+        api.get<any[]>('/assignments'),
+        api.get<any[]>('/maintenance/alerts'),
       ]);
+
+      const vehicles = vehiclesRes.data;
+      const drivers = driversRes.data;
+      const assignments = assignmentsRes.data;
+      const alerts = alertsRes.data;
 
       const isSevere = (sev?: string) => sev === 'High' || sev === 'Critical';
       const isAvailableVehicle = (status?: string) => status === 'Available';
-      const isActiveDriver = (status?: string) => status === 'Active';
+      const isActiveDriver = (status?: string) => status === 'OnDuty';
 
       return {
         totalVehicles: vehicles.length,
@@ -49,7 +48,11 @@ export const DashboardService = {
 
   getUtilization: async (): Promise<ChartData[]> => {
     try {
-      const summary = await FinancialService.getMonthlySummary();
+      const { data: summary } = await api.get<any[]>('/financial/summary');
+      if (!Array.isArray(summary)) {
+        console.error('Expected array from utilization endpoint, got:', typeof summary);
+        return [];
+      }
       return summary.map(s => ({
         label: s.month,
         value: parseFloat(s.profit) // Using profit as proxy for utilization for now
@@ -62,11 +65,15 @@ export const DashboardService = {
 
   getRecentAssignments: async (): Promise<Assignment[]> => {
     try {
-      const [assignments, vehicles, drivers] = await Promise.all([
-        AssignmentService.getAssignments(),
-        VehicleService.getVehicles(),
-        DriverService.getDrivers(),
+      const [assignmentsRes, vehiclesRes, driversRes] = await Promise.all([
+        api.get<any[]>('/assignments'),
+        api.get<any[]>('/vehicles'),
+        api.get<any[]>('/drivers'),
       ]);
+
+      const assignments = Array.isArray(assignmentsRes.data) ? assignmentsRes.data : [];
+      const vehicles = Array.isArray(vehiclesRes.data) ? vehiclesRes.data : [];
+      const drivers = Array.isArray(driversRes.data) ? driversRes.data : [];
 
       const vehicleNameById = new Map(
         vehicles
@@ -110,8 +117,11 @@ export const DashboardService = {
 
   getAlerts: async (): Promise<Alert[]> => {
     try {
-      const alerts = await MaintenanceService.getAlerts();
-
+      const { data: alerts } = await api.get<any[]>('/maintenance/alerts');
+      if (!Array.isArray(alerts)) {
+        console.error('Expected array from alerts endpoint, got:', typeof alerts);
+        return [];
+      }
       const toUiSeverity = (sev?: string): 'high' | 'medium' | 'low' => {
         if (sev === 'Critical' || sev === 'High') return 'high';
         if (sev === 'Medium') return 'medium';

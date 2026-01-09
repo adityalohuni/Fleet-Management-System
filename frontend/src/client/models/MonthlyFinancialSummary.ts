@@ -3,9 +3,9 @@
 /* tslint:disable */
 /* eslint-disable */
 export type MonthlyFinancialSummary = {
-    month?: string;
-    revenue?: string;
-    cost?: string;
-    profit?: string;
+    cost: string;
+    month: string;
+    profit: string;
+    revenue: string;
 };
 

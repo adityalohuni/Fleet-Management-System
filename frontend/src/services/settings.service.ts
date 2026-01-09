@@ -13,17 +13,17 @@ export const SettingsService = {
   },
 
   listUsers: async () => {
-    const { data } = await api.get<Array<{ id: string; email: string; role: string; is_active: boolean }>>('/users');
+    const { data } = await api.get<Array<{ id: string; email: string; name?: string; role: string; is_active: boolean }>>('/users');
     return data;
   },
 
-  createUser: async (dto: { email: string; password: string; role: string; is_active: boolean }) => {
-    const { data } = await api.post<{ id: string; email: string; role: string; is_active: boolean }>('/users', dto);
+  createUser: async (dto: { email: string; password: string; role: string; name?: string; is_active: boolean }) => {
+    const { data } = await api.post<{ id: string; email: string; name?: string; role: string; is_active: boolean }>('/users', dto);
     return data;
   },
 
   updateUser: async (id: string, dto: { role: string; is_active: boolean }) => {
-    const { data } = await api.put<{ id: string; email: string; role: string; is_active: boolean }>(`/users/${id}`, dto);
+    const { data } = await api.put<{ id: string; email: string; name?: string; role: string; is_active: boolean }>(`/users/${id}`, dto);
     return data;
   },
 };

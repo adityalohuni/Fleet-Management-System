@@ -1,5 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Button } from "../ui/button";
+import { useState } from "react";
 import {
   Table,
   TableBody,
@@ -27,17 +28,44 @@ import {
   SelectValue,
 } from "../ui/select";
 import { useMonthlySummary, useVehicleProfitability } from "../../hooks/useFinancial";
+import { toast } from "../../lib/toast";
+import React from "react";
 
 export function Financial() {
-  const { data: monthlySummary, isLoading: isSummaryLoading } = useMonthlySummary();
-  const { data: vehicleProfitability, isLoading: isProfitabilityLoading } = useVehicleProfitability();
+  const [period, setPeriod] = useState("current-year");
+  
+  // Calculate date range based on period
+  const getDateRange = (selectedPeriod: string) => {
+    const now = new Date();
+    let startDate: string | undefined;
+    let endDate: string | undefined;
+    
+    if (selectedPeriod === "current-year") {
+      startDate = `${now.getFullYear()}-01-01`;
+      endDate = `${now.getFullYear()}-12-31`;
+    } else if (selectedPeriod === "last-year") {
+      const lastYear = now.getFullYear() - 1;
+      startDate = `${lastYear}-01-01`;
+      endDate = `${lastYear}-12-31`;
+    } else if (selectedPeriod === "last-12-months") {
+      const lastYear = new Date(now.getFullYear() - 1, now.getMonth(), now.getDate());
+      startDate = lastYear.toISOString().split('T')[0];
+      endDate = now.toISOString().split('T')[0];
+    }
+    
+    return { startDate, endDate };
+  };
+
+  const { startDate, endDate } = getDateRange(period);
+  const { data: monthlySummary, isLoading: isSummaryLoading } = useMonthlySummary(startDate, endDate);
+  const { data: vehicleProfitability, isLoading: isProfitabilityLoading } = useVehicleProfitability(startDate, endDate);
 
   const chartData = monthlySummary?.map(item => ({
     month: item.month,
-    revenue: parseFloat(item.revenue),
-    costs: parseFloat(item.cost),
-    profit: parseFloat(item.profit),
-  })) || [];
+    revenue: parseFloat(item.revenue) || 0,
+    costs: parseFloat(item.cost) || 0,
+    profit: parseFloat(item.profit) || 0,
+  })).filter(item => !isNaN(item.revenue) && !isNaN(item.costs)) || [];
 
   const totalRevenue = chartData.reduce((acc, curr) => acc + curr.revenue, 0);
   const totalProfit = chartData.reduce((acc, curr) => acc + curr.profit, 0);
@@ -66,6 +94,49 @@ export function Financial() {
     return `${sign}${v.toFixed(1)}%`;
   };
 
+  const handleExportPDF = () => {
+    if (!monthlySummary || monthlySummary.length === 0) {
+      toast.warning('No data available to export');
+      return;
+    }
+    
+    // Create CSV content (browser-compatible fallback to PDF)
+    const headers = ['Month', 'Revenue', 'Costs', 'Profit', 'Margin %'];
+    const rows = chartData.map(item => [
+      item.month,
+      `$${item.revenue.toLocaleString()}`,
+      `$${item.costs.toLocaleString()}`,
+      `$${item.profit.toLocaleString()}`,
+      `${((item.profit / item.revenue) * 100).toFixed(1)}%`
+    ]);
+    
+    // Add summary row
+    rows.push(['', '', '', '', '']);
+    rows.push(['TOTAL', `$${totalRevenue.toLocaleString()}`, '', `$${totalProfit.toLocaleString()}`, `${profitMargin.toFixed(1)}%`]);
+    
+    const csvContent = [
+      `Fleet Management - Financial Report`,
+      `Period: ${period.replace('-', ' ').toUpperCase()}`,
+      `Generated: ${new Date().toLocaleDateString()}`,
+      '',
+      headers.join(','),
+      ...rows.map(row => row.join(','))
+    ].join('\n');
+    
+    // Download as CSV
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', `financial-report-${new Date().getTime()}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    toast.success('Financial report exported successfully');
+  };
+
   if (isSummaryLoading || isProfitabilityLoading) {
     return <div>Loading financial data...</div>;
   }
@@ -74,13 +145,13 @@ export function Financial() {
     <div className="space-y-6">
       <div className="flex items-center justify-between border-b border-border/40 pb-6">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-foreground mb-2">Financial Dashboard</h1>
-          <p className="text-base text-foreground-secondary">
+          <h1 className="page-header mb-2">Financial Dashboard</h1>
+          <p className="page-subtitle">
             Analyze profitability and financial performance
           </p>
         </div>
         <div className="flex items-center gap-3">
-          <Select defaultValue="current-year">
+          <Select value={period} onValueChange={setPeriod}>
             <SelectTrigger className="w-40">
               <SelectValue placeholder="Select Period" />
             </SelectTrigger>
@@ -90,7 +161,7 @@ export function Financial() {
               <SelectItem value="last-12-months">Last 12 Months</SelectItem>
             </SelectContent>
           </Select>
-          <Button variant="outline">
+          <Button variant="outline" onClick={handleExportPDF}>
             <Download className="mr-2 h-4 w-4" />
             Export Report
           </Button>
@@ -178,17 +249,21 @@ export function Financial() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {vehicleProfitability?.map((vehicle) => (
-                <TableRow key={vehicle.vehicle_id}>
-                  <TableCell className="font-medium">#{vehicle.rank}</TableCell>
-                  <TableCell>{vehicle.vehicle_plate}</TableCell>
-                  <TableCell className="text-right">${parseFloat(vehicle.revenue).toLocaleString()}</TableCell>
-                  <TableCell className="text-right">${parseFloat(vehicle.cost).toLocaleString()}</TableCell>
-                  <TableCell className="text-right font-bold text-green-600">
-                    ${parseFloat(vehicle.profit).toLocaleString()}
-                  </TableCell>
-                </TableRow>
-              ))}
+              {vehicleProfitability?.map((vehicle) => {
+                const profit = parseFloat(vehicle.profit);
+                const isNegative = profit < 0;
+                return (
+                  <TableRow key={vehicle.vehicle_id}>
+                    <TableCell className="font-medium">#{vehicle.rank}</TableCell>
+                    <TableCell>{vehicle.vehicle_plate}</TableCell>
+                    <TableCell className="text-right">${parseFloat(vehicle.revenue).toLocaleString()}</TableCell>
+                    <TableCell className="text-right">${parseFloat(vehicle.cost).toLocaleString()}</TableCell>
+                    <TableCell className={`text-right font-bold ${isNegative ? 'text-red-600' : 'text-green-600'}`}>
+                      ${profit.toLocaleString()}
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
             </TableBody>
           </Table>
         </CardContent>
